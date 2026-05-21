@@ -1,0 +1,31 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model WaitlistLead {
+  id             Int      @id @default(autoincrement())
+  name           String   @db.VarChar(255)
+  email          String   @unique @db.VarChar(255)
+  age            Int
+  cityState      String   @db.VarChar(255)
+  identity       String   @db.VarChar(255)
+  customIdentity String?  @db.VarChar(255)
+  lookingFor     Json
+  wantsToMeet    Json
+  betaInterest   String   @db.VarChar(64)
+  contactHandle  String?  @db.VarChar(255)
+  biggestPain    String?  @db.Text
+  comment        String?  @db.Text
+  source         String?  @db.VarChar(120)
+  utmSource      String?  @db.VarChar(255)
+  utmMedium      String?  @db.VarChar(255)
+  utmCampaign    String?  @db.VarChar(255)
+  referrer       String?  @db.Text
+  userAgent      String?  @db.Text
+  createdAt      DateTime @default(now())
+}

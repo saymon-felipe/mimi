@@ -1,0 +1,25 @@
+CREATE TABLE `WaitlistLead` (
+  `id` INTEGER NOT NULL AUTO_INCREMENT,
+  `name` VARCHAR(255) NOT NULL,
+  `email` VARCHAR(255) NOT NULL,
+  `age` INTEGER NOT NULL,
+  `cityState` VARCHAR(255) NOT NULL,
+  `identity` VARCHAR(255) NOT NULL,
+  `customIdentity` VARCHAR(255) NULL,
+  `lookingFor` JSON NOT NULL,
+  `wantsToMeet` JSON NOT NULL,
+  `betaInterest` VARCHAR(64) NOT NULL,
+  `contactHandle` VARCHAR(255) NULL,
+  `biggestPain` TEXT NULL,
+  `comment` TEXT NULL,
+  `source` VARCHAR(120) NULL,
+  `utmSource` VARCHAR(255) NULL,
+  `utmMedium` VARCHAR(255) NULL,
+  `utmCampaign` VARCHAR(255) NULL,
+  `referrer` TEXT NULL,
+  `userAgent` TEXT NULL,
+  `createdAt` DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+
+  UNIQUE INDEX `WaitlistLead_email_key`(`email`),
+  PRIMARY KEY (`id`)
+) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
