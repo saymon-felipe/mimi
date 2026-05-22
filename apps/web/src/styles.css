@@ -169,7 +169,7 @@ a {
   border-radius: 999px;
   background: transparent;
   color: rgba(31, 27, 46, 0.68);
-  padding: 0.72rem 0.9rem;
+  padding: 0.6rem 0.8rem;
   font-size: 0.94rem;
   font-weight: 800;
   transition: background 180ms ease, color 180ms ease, transform 180ms ease;
@@ -249,7 +249,7 @@ a {
 
 .hero {
   display: grid;
-  grid-template-columns: minmax(320px, 0.56fr) minmax(0, 1.44fr);
+  grid-template-columns: minmax(320px, 1fr) minmax(0, 0.85fr);
   gap: clamp(3rem, 4.6vw, 4.6rem);
   align-items: center;
   min-height: calc(100svh - 4.5rem);
@@ -294,7 +294,7 @@ a {
 }
 
 .hero-subtitle {
-  max-width: 43rem;
+  max-width: 32rem;
   margin: 1.25rem 0 0;
   color: rgba(31, 27, 46, 0.84);
   font-size: clamp(1.06rem, 2vw, 1.22rem);
@@ -302,7 +302,7 @@ a {
 }
 
 .hero-support {
-  max-width: 35rem;
+  max-width: 28rem;
   margin: 0.95rem 0 0;
   color: var(--muted);
   font-size: 1rem;
@@ -367,8 +367,8 @@ a {
 }
 
 .hero-lite-stage {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(13rem, 0.68fr);
+  display: flex;
+  flex-direction: column;
   gap: 1rem;
   align-items: center;
   min-height: 560px;
@@ -383,7 +383,7 @@ a {
   z-index: 1;
   border: 1px solid rgba(231, 224, 245, 0.86);
   border-radius: 28px;
-  padding: 1.18rem;
+  padding: 1.5rem;
   background: rgba(255, 255, 255, 0.78);
   box-shadow: 0 22px 50px rgba(39, 31, 74, 0.1);
   backdrop-filter: blur(18px);
@@ -537,10 +537,10 @@ a {
 
 .app-shell {
   display: grid;
-  grid-template-columns: 118px minmax(420px, 1fr) 196px;
-  gap: 0.78rem;
+  grid-template-columns: 160px minmax(480px, 1fr) 240px;
+  gap: 1rem;
   min-height: 590px;
-  padding: 0.82rem;
+  padding: 1.25rem;
   background:
     linear-gradient(90deg, rgba(248, 246, 255, 0.72), rgba(255, 255, 255, 0.45)),
     rgba(255, 255, 255, 0.55);
@@ -565,7 +565,7 @@ a {
   display: flex;
   flex-direction: column;
   gap: 0.42rem;
-  padding: 0.68rem;
+  padding: 1rem;
 }
 
 .mini-logo {
@@ -575,7 +575,7 @@ a {
   margin-bottom: 0.55rem;
   color: var(--ink);
   font-family: "Madimi One", "Nunito Sans", ui-sans-serif, system-ui, sans-serif;
-  font-size: 1.05rem;
+  font-size: 1.25rem;
   font-weight: 400;
 }
 
@@ -585,16 +585,16 @@ a {
 }
 
 .test-sidebar .mini-logo span {
-  width: 1.85rem;
-  height: 1.85rem;
+  width: 2rem;
+  height: 2rem;
   border-radius: 0;
   background: transparent;
   box-shadow: none;
 }
 
 .test-sidebar .mini-logo img {
-  width: 1.85rem;
-  height: 1.85rem;
+  width: 2rem;
+  height: 2rem;
 }
 
 .test-sidebar .sidebar-thread {
@@ -612,7 +612,7 @@ a {
   padding: 0.48rem 0.62rem;
   background: rgba(255, 255, 255, 0.58);
   color: rgba(72, 66, 104, 0.72);
-  font-size: 0.68rem;
+  font-size: 0.72rem;
   line-height: 1.15;
   box-shadow: 0 8px 16px rgba(72, 66, 104, 0.04);
 }
@@ -639,16 +639,16 @@ a {
 .mini-logo span {
   display: grid;
   place-items: center;
-  width: 1.7rem;
-  height: 1.7rem;
+  width: 2rem;
+  height: 2rem;
   border-radius: 12px 15px 12px 16px;
   background: linear-gradient(135deg, var(--primary), var(--pink));
   box-shadow: 0 10px 20px rgba(139, 92, 246, 0.2);
 }
 
 .mini-logo img {
-  width: 1.05rem;
-  height: 1.05rem;
+  width: 1.15rem;
+  height: 1.15rem;
   object-fit: contain;
 }
 
@@ -668,9 +668,9 @@ a {
   border-radius: 14px;
   background: transparent;
   color: var(--muted);
-  padding: 0.58rem 0.62rem;
+  padding: 0.65rem 0.75rem;
   text-align: left;
-  font-size: 0.76rem;
+  font-size: 0.85rem;
   font-weight: 900;
   line-height: 1.1;
 }
@@ -691,7 +691,7 @@ a {
 
 .sidebar-thread span {
   color: rgba(31, 27, 46, 0.62);
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   font-weight: 900;
   line-height: 1.25;
 }
@@ -701,9 +701,9 @@ a {
   border-radius: 12px;
   background: transparent;
   color: rgba(31, 27, 46, 0.62);
-  padding: 0.34rem 0.42rem;
+  padding: 0.4rem 0.5rem;
   text-align: left;
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   font-weight: 900;
   line-height: 1.25;
   transition: background 180ms ease, color 180ms ease, transform 180ms ease;
@@ -720,7 +720,7 @@ a {
   margin-top: auto;
   border: 1px solid rgba(255, 255, 255, 0.72);
   border-radius: 16px;
-  padding: 0.72rem;
+  padding: 0.85rem;
   background:
     linear-gradient(135deg, rgba(255, 247, 232, 0.95), rgba(255, 228, 236, 0.74));
 }
@@ -728,7 +728,7 @@ a {
 .sidebar-kicker {
   display: block;
   color: #8a5060;
-  font-size: 0.58rem;
+  font-size: 0.65rem;
   font-weight: 950;
   text-transform: uppercase;
 }
@@ -736,19 +736,19 @@ a {
 .sidebar-card strong {
   display: block;
   margin-top: 0.26rem;
-  font-size: 0.84rem;
+  font-size: 0.9rem;
 }
 
 .sidebar-card p {
   margin: 0.3rem 0 0;
   color: var(--muted);
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   line-height: 1.38;
 }
 
 .mock-feed {
   overflow: hidden;
-  padding: 0.72rem;
+  padding: 1rem;
   background: rgba(255, 255, 255, 0.66);
 }
 
@@ -757,10 +757,10 @@ a {
   grid-template-columns: auto minmax(0, 1fr) auto;
   gap: 0.58rem;
   align-items: center;
-  margin-bottom: 0.66rem;
+  margin-bottom: 0.8rem;
   border: 1px solid rgba(231, 224, 245, 0.88);
   border-radius: 16px;
-  padding: 0.62rem;
+  padding: 0.8rem;
   background: linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(248, 246, 255, 0.75));
 }
 
@@ -771,12 +771,12 @@ a {
 }
 
 .composer-card strong {
-  font-size: 0.76rem;
+  font-size: 0.85rem;
 }
 
 .composer-card p {
   color: var(--muted);
-  font-size: 0.66rem;
+  font-size: 0.75rem;
   line-height: 1.3;
 }
 
@@ -785,8 +785,8 @@ a {
   border-radius: 999px;
   background: var(--ink);
   color: white;
-  padding: 0.44rem 0.66rem;
-  font-size: 0.66rem;
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
   font-weight: 950;
 }
 
@@ -796,21 +796,21 @@ a {
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 0.95rem;
+  margin-bottom: 1rem;
 }
 
 .mock-topbar strong,
 .card-header strong {
   display: block;
   margin-top: 0.18rem;
-  font-size: 1.05rem;
+  font-size: 1.15rem;
   line-height: 1.25;
 }
 
 .muted-label,
 .card-header span {
   color: var(--muted);
-  font-size: 0.76rem;
+  font-size: 0.85rem;
   font-weight: 950;
 }
 
@@ -818,20 +818,20 @@ a {
 .post-chip {
   white-space: nowrap;
   border-radius: 999px;
-  padding: 0.34rem 0.48rem;
+  padding: 0.4rem 0.6rem;
   background: linear-gradient(135deg, var(--blue-soft), rgba(255, 255, 255, 0.78));
   color: #315779;
-  font-size: 0.64rem;
+  font-size: 0.75rem;
   font-weight: 950;
 }
 
 .mock-post {
-  padding: 0.78rem;
+  padding: 1rem;
   background: rgba(255, 255, 255, 0.9);
 }
 
 .mock-post + .mock-post {
-  margin-top: 0.7rem;
+  margin-top: 0.85rem;
 }
 
 .featured-post {
@@ -855,12 +855,12 @@ a {
 
 .post-head span {
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   line-height: 1.35;
 }
 
 .app-window .post-head strong {
-  font-size: 0.84rem;
+  font-size: 0.95rem;
   line-height: 1.2;
 }
 
@@ -870,8 +870,8 @@ a {
   border-radius: 999px;
   background: rgba(221, 214, 254, 0.5);
   color: var(--primary-strong);
-  padding: 0.44rem 0.7rem;
-  font-size: 0.74rem;
+  padding: 0.5rem 0.8rem;
+  font-size: 0.85rem;
   font-weight: 950;
 }
 
@@ -879,8 +879,8 @@ a {
   display: grid;
   flex: 0 0 auto;
   place-items: center;
-  width: 2.85rem;
-  height: 2.85rem;
+  width: 3rem;
+  height: 3rem;
   border: 2px solid rgba(255, 255, 255, 0.86);
   border-radius: 50%;
   color: var(--ink);
@@ -929,9 +929,9 @@ a {
 
 .mock-post p {
   max-width: 31rem;
-  margin: 0.66rem 0;
+  margin: 0.8rem 0;
   color: rgba(31, 27, 46, 0.88);
-  font-size: 0.82rem;
+  font-size: 0.9rem;
   line-height: 1.56;
 }
 
@@ -943,10 +943,10 @@ a {
 
 .tag-row span {
   border-radius: 999px;
-  padding: 0.38rem 0.58rem;
+  padding: 0.45rem 0.65rem;
   background: rgba(255, 228, 236, 0.82);
   color: #8b4b60;
-  font-size: 0.74rem;
+  font-size: 0.8rem;
   font-weight: 900;
 }
 
@@ -954,8 +954,8 @@ a {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.4rem;
-  margin-top: 0.7rem;
+  gap: 0.5rem;
+  margin-top: 0.85rem;
 }
 
 .post-actions button,
@@ -964,8 +964,8 @@ a {
   border-radius: 999px;
   background: white;
   color: var(--ink);
-  padding: 0.5rem 0.78rem;
-  font-size: 0.77rem;
+  padding: 0.6rem 0.9rem;
+  font-size: 0.85rem;
   font-weight: 950;
 }
 
@@ -979,81 +979,81 @@ a {
 
 .post-actions span {
   color: var(--muted);
-  font-size: 0.76rem;
+  font-size: 0.85rem;
   font-weight: 850;
 }
 
 .app-window .mock-topbar {
   gap: 0.72rem;
-  margin-bottom: 0.7rem;
+  margin-bottom: 0.85rem;
 }
 
 .app-window .mock-topbar strong {
-  font-size: 0.92rem;
+  font-size: 1rem;
 }
 
 .app-window .muted-label {
-  font-size: 0.66rem;
+  font-size: 0.75rem;
 }
 
 .app-window .post-head {
-  gap: 0.58rem;
+  gap: 0.65rem;
 }
 
 .app-window .post-head span {
-  font-size: 0.68rem;
+  font-size: 0.75rem;
   line-height: 1.3;
 }
 
 .app-window .post-head button {
-  padding: 0.34rem 0.54rem;
-  font-size: 0.64rem;
+  padding: 0.4rem 0.6rem;
+  font-size: 0.75rem;
 }
 
 .app-window .avatar {
-  width: 2.25rem;
-  height: 2.25rem;
-  font-size: 0.82rem;
+  width: 2.5rem;
+  height: 2.5rem;
+  font-size: 0.9rem;
 }
 
 .app-window .tag-row {
-  gap: 0.34rem;
+  gap: 0.4rem;
 }
 
 .app-window .tag-row span {
-  padding: 0.28rem 0.44rem;
-  font-size: 0.64rem;
+  padding: 0.35rem 0.55rem;
+  font-size: 0.75rem;
 }
 
 .app-window .post-actions button {
-  padding: 0.38rem 0.58rem;
-  font-size: 0.67rem;
+  padding: 0.45rem 0.65rem;
+  font-size: 0.75rem;
 }
 
 .app-window .post-actions span {
-  font-size: 0.66rem;
+  font-size: 0.75rem;
 }
 
 .comment-strip {
   display: flex;
   gap: 0.42rem;
   align-items: flex-start;
-  margin-top: 0.64rem;
+  margin-top: 0.85rem;
   border-radius: 14px;
-  padding: 0.5rem 0.58rem;
+  padding: 0.65rem 0.75rem;
   background: rgba(248, 246, 255, 0.9);
 }
 
 .comment-strip span {
   color: var(--primary-strong);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   font-weight: 950;
 }
 
 .comment-strip p {
   margin: 0;
   color: var(--muted);
-  font-size: 0.65rem;
+  font-size: 0.75rem;
 }
 
 .fake-image {
@@ -1061,7 +1061,7 @@ a {
   grid-template-columns: 1fr 0.54fr;
   grid-template-rows: repeat(2, minmax(4rem, 1fr));
   gap: 0.42rem;
-  margin: 0.66rem 0;
+  margin: 0.85rem 0;
   aspect-ratio: 16 / 9;
   min-height: 8.6rem;
   overflow: hidden;
@@ -1102,13 +1102,13 @@ a {
   gap: 0.4rem;
   align-items: flex-start;
   border-radius: 14px;
-  padding: 0.5rem;
+  padding: 0.65rem;
   background: rgba(248, 246, 255, 0.9);
 }
 
 .comment-preview strong,
 .comment-preview span {
-  font-size: 0.65rem;
+  font-size: 0.75rem;
   line-height: 1.28;
 }
 
@@ -1119,39 +1119,39 @@ a {
 .mock-right {
   display: flex;
   flex-direction: column;
-  gap: 0.62rem;
+  gap: 0.85rem;
 }
 
 .right-panel {
   border: 1px solid rgba(231, 224, 245, 0.82);
   border-radius: 18px;
-  padding: 0.75rem;
+  padding: 1rem;
   background: rgba(255, 255, 255, 0.74);
 }
 
 .right-panel strong {
   display: block;
   margin-top: 0.24rem;
-  font-size: 0.84rem;
+  font-size: 0.95rem;
   line-height: 1.3;
 }
 
 .right-panel p {
   margin: 0.38rem 0 0;
   color: var(--muted);
-  font-size: 0.68rem;
+  font-size: 0.8rem;
   line-height: 1.38;
 }
 
 .right-panel button {
   width: 100%;
-  margin-top: 0.64rem;
+  margin-top: 0.85rem;
   border: 0;
   border-radius: 999px;
   background: var(--ink);
   color: white;
-  padding: 0.45rem 0.6rem;
-  font-size: 0.68rem;
+  padding: 0.55rem 0.7rem;
+  font-size: 0.75rem;
   font-weight: 950;
 }
 
@@ -1168,15 +1168,15 @@ a {
   display: flex;
   flex-wrap: wrap;
   gap: 0.38rem;
-  margin-top: 0.65rem;
+  margin-top: 0.85rem;
 }
 
 .affinity-list span {
   border-radius: 999px;
-  padding: 0.35rem 0.5rem;
+  padding: 0.4rem 0.6rem;
   background: rgba(221, 238, 255, 0.78);
   color: #315779;
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 900;
 }
 
@@ -1207,10 +1207,10 @@ a {
 
 .test-drive-shell {
   display: grid;
-  grid-template-columns: 152px minmax(0, 1fr) 238px;
-  gap: 1rem;
+  grid-template-columns: 180px minmax(0, 1fr) 260px;
+  gap: 1.25rem;
   min-height: 760px;
-  padding: 1rem;
+  padding: 1.25rem;
   background: rgba(255, 255, 255, 0.46);
 }
 
@@ -1227,13 +1227,13 @@ a {
   display: flex;
   flex-direction: column;
   gap: 0.58rem;
-  padding: 0.9rem;
+  padding: 1.25rem;
 }
 
 .test-main {
   max-height: 760px;
   overflow: auto;
-  padding: 1rem;
+  padding: 1.25rem;
   scrollbar-width: thin;
   scrollbar-color: rgba(139, 92, 246, 0.28) transparent;
 }
@@ -1241,10 +1241,10 @@ a {
 .test-right {
   display: flex;
   flex-direction: column;
-  gap: 0.78rem;
+  gap: 1rem;
   max-height: 760px;
   overflow: auto;
-  padding: 0.82rem;
+  padding: 1.25rem;
   scrollbar-width: thin;
   scrollbar-color: rgba(139, 92, 246, 0.22) transparent;
 }
@@ -1253,14 +1253,14 @@ a {
   display: flex;
   justify-content: space-between;
   gap: 1rem;
-  margin-bottom: 0.9rem;
+  margin-bottom: 1rem;
 }
 
 .test-topbar h3,
 .invite-screen h3 {
   margin: 0.18rem 0 0;
   color: var(--ink);
-  font-size: 1.35rem;
+  font-size: 1.45rem;
   line-height: 1.12;
 }
 
@@ -1274,10 +1274,10 @@ a {
 .demo-composer {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.78rem;
+  gap: 0.85rem;
   border: 1px solid rgba(231, 224, 245, 0.86);
   border-radius: 22px;
-  padding: 0.9rem;
+  padding: 1.1rem;
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.86), rgba(248, 246, 255, 0.72)),
     white;
@@ -1287,8 +1287,8 @@ a {
   display: grid;
   flex: 0 0 auto;
   place-items: center;
-  width: 2.55rem;
-  height: 2.55rem;
+  width: 2.85rem;
+  height: 2.85rem;
   border: 2px solid rgba(255, 255, 255, 0.88);
   border-radius: 50%;
   color: var(--ink);
@@ -1346,7 +1346,7 @@ a {
   flex-wrap: wrap;
   gap: 0.6rem;
   justify-content: flex-end;
-  margin-top: 0.72rem;
+  margin-top: 0.85rem;
 }
 
 .upload-pill input {
@@ -1367,8 +1367,8 @@ a {
   border-radius: 999px;
   background: white;
   color: var(--ink);
-  padding: 0.52rem 0.78rem;
-  font-size: 0.78rem;
+  padding: 0.55rem 0.85rem;
+  font-size: 0.85rem;
   font-weight: 950;
   line-height: 1;
   transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease, color 160ms ease;
@@ -1396,7 +1396,7 @@ a {
 .composer-image-preview {
   position: relative;
   overflow: hidden;
-  margin-top: 0.7rem;
+  margin-top: 0.85rem;
   border-radius: 18px;
   min-height: 12rem;
   max-height: 28rem;
@@ -1417,27 +1417,27 @@ a {
 
 .composer-image-preview button {
   position: absolute;
-  right: 0.65rem;
-  bottom: 0.65rem;
+  right: 0.75rem;
+  bottom: 0.75rem;
   border: 0;
   border-radius: 999px;
-  padding: 0.44rem 0.64rem;
+  padding: 0.5rem 0.75rem;
   background: rgba(31, 27, 46, 0.82);
   color: white;
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 950;
 }
 
 .demo-post-list {
   display: grid;
-  gap: 0.85rem;
-  margin-top: 0.9rem;
+  gap: 1rem;
+  margin-top: 1rem;
 }
 
 .demo-post {
   border: 1px solid rgba(231, 224, 245, 0.86);
   border-radius: 22px;
-  padding: 0.95rem;
+  padding: 1.15rem;
   background: rgba(255, 255, 255, 0.86);
   box-shadow: 0 12px 24px rgba(39, 31, 74, 0.055);
   transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease;
@@ -1460,7 +1460,7 @@ a {
 .demo-post-head {
   display: flex;
   align-items: flex-start;
-  gap: 0.7rem;
+  gap: 0.85rem;
 }
 
 .demo-post-head > div {
@@ -1476,6 +1476,7 @@ a {
 .demo-post-head strong {
   color: var(--ink);
   line-height: 1.15;
+  font-size: 1.05rem;
 }
 
 .demo-post-head div button {
@@ -1483,14 +1484,14 @@ a {
   background: transparent;
   color: var(--primary-strong);
   padding: 0;
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   font-weight: 900;
   text-align: left;
 }
 
 .demo-post-head span {
   color: var(--muted);
-  font-size: 0.74rem;
+  font-size: 0.8rem;
 }
 
 .follow-button {
@@ -1500,15 +1501,16 @@ a {
 }
 
 .demo-post > p {
-  margin: 0.82rem 0;
+  margin: 0.95rem 0;
   color: rgba(31, 27, 46, 0.88);
   line-height: 1.6;
+  font-size: 0.95rem;
 }
 
 .demo-media {
   display: grid;
-  gap: 0.55rem;
-  margin: 0.78rem 0;
+  gap: 0.65rem;
+  margin: 0.95rem 0;
 }
 
 .demo-media button {
@@ -1572,37 +1574,37 @@ a {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
-  margin-top: 0.72rem;
+  gap: 0.6rem;
+  margin-top: 0.85rem;
 }
 
 .demo-actions span {
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: 0.85rem;
   font-weight: 850;
 }
 
 .demo-comments {
   display: grid;
-  gap: 0.6rem;
-  margin-top: 0.78rem;
+  gap: 0.75rem;
+  margin-top: 0.95rem;
   border-radius: 18px;
-  padding: 0.78rem;
+  padding: 0.95rem;
   background: rgba(248, 246, 255, 0.9);
 }
 
 .demo-comments > div {
   display: grid;
   grid-template-columns: auto minmax(0, 1fr);
-  gap: 0.48rem;
+  gap: 0.6rem;
   align-items: flex-start;
 }
 
 .comment-avatar {
   display: grid;
   place-items: center;
-  width: 1.75rem;
-  height: 1.75rem;
+  width: 2rem;
+  height: 2rem;
   border-radius: 50%;
   overflow: hidden;
   background: var(--primary-soft);
@@ -1611,28 +1613,29 @@ a {
 
 .demo-comments > div > div {
   display: grid;
-  gap: 0.16rem;
+  gap: 0.2rem;
 }
 
 .demo-comments strong {
   color: var(--primary-strong);
-  font-size: 0.78rem;
+  font-size: 0.85rem;
 }
 
 .demo-comments p {
   margin: 0;
   color: var(--muted);
-  font-size: 0.82rem;
+  font-size: 0.9rem;
 }
 
 .demo-comments form {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.5rem;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
 }
 
 .demo-comments input {
-  padding: 0.62rem 0.72rem;
+  padding: 0.75rem 0.85rem;
 }
 
 .invite-screen {
@@ -1650,8 +1653,8 @@ a {
 .invite-screen-pro {
   align-content: start;
   min-height: 560px;
-  gap: 1rem;
-  padding: 1rem;
+  gap: 1.25rem;
+  padding: 1.25rem;
   background:
     radial-gradient(circle at 94% 8%, rgba(254, 167, 213, 0.18), transparent 18rem),
     radial-gradient(circle at 12% 18%, rgba(168, 133, 251, 0.16), transparent 15rem),
@@ -1665,43 +1668,43 @@ a {
   align-items: center;
   border: 1px solid rgba(231, 224, 245, 0.78);
   border-radius: 22px;
-  padding: 0.9rem;
+  padding: 1rem;
   background: rgba(255, 255, 255, 0.74);
 }
 
 .invite-dashboard h3 {
-  font-size: 1.18rem;
+  font-size: 1.25rem;
 }
 
 .invite-stats {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 0.45rem;
+  gap: 0.55rem;
   align-items: stretch;
-  min-width: 13rem;
+  min-width: 14rem;
   border-radius: 18px;
-  padding: 0.45rem;
+  padding: 0.55rem;
   background: linear-gradient(135deg, rgba(232, 221, 255, 0.72), rgba(255, 229, 244, 0.52));
 }
 
 .invite-stat {
   display: grid;
   place-items: center;
-  gap: 0.12rem;
+  gap: 0.15rem;
   border-radius: 14px;
-  padding: 0.52rem;
+  padding: 0.65rem;
   background: rgba(255, 255, 255, 0.42);
 }
 
 .invite-stat strong {
   color: var(--ink);
-  font-size: 1rem;
+  font-size: 1.15rem;
   line-height: 1;
 }
 
 .invite-stat em {
   color: var(--muted);
-  font-size: 0.66rem;
+  font-size: 0.72rem;
   font-style: normal;
   font-weight: 950;
   text-transform: uppercase;
@@ -1710,7 +1713,7 @@ a {
 .invite-toolbar {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
-  gap: 0.72rem;
+  gap: 0.85rem;
   align-items: center;
 }
 
@@ -1718,7 +1721,7 @@ a {
   width: 100%;
   border: 1px solid rgba(72, 66, 104, 0.1);
   border-radius: 999px;
-  padding: 0.72rem 0.9rem;
+  padding: 0.85rem 1rem;
   background: rgba(255, 255, 255, 0.82);
   color: var(--ink);
   outline: none;
@@ -1732,17 +1735,17 @@ a {
 .invite-toolbar > div {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.38rem;
+  gap: 0.5rem;
   justify-content: flex-end;
 }
 
 .invite-toolbar button {
   border: 1px solid rgba(72, 66, 104, 0.1);
   border-radius: 999px;
-  padding: 0.54rem 0.7rem;
+  padding: 0.65rem 0.85rem;
   background: rgba(255, 255, 255, 0.74);
   color: var(--muted);
-  font-size: 0.72rem;
+  font-size: 0.8rem;
   font-weight: 950;
 }
 
@@ -1755,7 +1758,7 @@ a {
 
 .invite-list {
   display: grid;
-  gap: 0.76rem;
+  gap: 0.85rem;
 }
 
 .invite-request-card {
@@ -1763,7 +1766,7 @@ a {
   overflow: hidden;
   border: 1px solid rgba(231, 224, 245, 0.86);
   border-radius: 24px;
-  padding: 1rem;
+  padding: 1.25rem;
   background:
     linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 250, 253, 0.66)),
     white;
@@ -1775,12 +1778,12 @@ a {
   z-index: 1;
   display: flex;
   align-items: center;
-  gap: 0.74rem;
+  gap: 0.85rem;
 }
 
 .invite-person img {
-  width: 3rem;
-  height: 3rem;
+  width: 3.5rem;
+  height: 3.5rem;
   flex: 0 0 auto;
   border: 3px solid white;
   border-radius: 50%;
@@ -1795,29 +1798,29 @@ a {
 
 .invite-person strong {
   color: var(--ink);
-  font-size: 1rem;
+  font-size: 1.1rem;
   line-height: 1.2;
 }
 
 .invite-person span {
-  margin-top: 0.12rem;
+  margin-top: 0.15rem;
   color: var(--muted);
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   font-weight: 850;
 }
 
 .invite-request-card p {
   position: relative;
   z-index: 1;
-  max-width: 28rem;
-  margin-top: 0.7rem;
-  font-size: 0.88rem;
+  max-width: 32rem;
+  margin-top: 0.85rem;
+  font-size: 0.95rem;
 }
 
 .invite-request-card .invite-actions {
   position: relative;
   z-index: 1;
-  margin-top: 0.8rem;
+  margin-top: 1rem;
 }
 
 .invite-bg-icon {
@@ -1859,10 +1862,10 @@ a {
 }
 
 .demo-chat {
-  margin-top: 1rem;
+  margin-top: 1.25rem;
   border: 1px solid rgba(139, 92, 246, 0.16);
   border-radius: 20px;
-  padding: 0.9rem;
+  padding: 1rem;
   background: rgba(255, 255, 255, 0.78);
 }
 
@@ -1874,7 +1877,7 @@ a {
 }
 
 .demo-chat p {
-  margin: 0.45rem 0;
+  margin: 0.55rem 0;
 }
 
 .demo-toast {
@@ -2305,6 +2308,11 @@ a {
   line-height: 1.72;
 }
 
+.section-heading.compact p {
+  max-width: 38rem;
+  margin: 0.95rem auto 0;
+}
+
 .three-grid,
 .step-grid,
 .product-grid,
@@ -2355,9 +2363,10 @@ a {
   display: grid;
   gap: 0.45rem;
   place-items: center;
-  min-height: 116px;
+  min-height: 130px;
   border: 1px solid rgba(231, 224, 245, 0.82);
   border-radius: 24px;
+  padding: 1.25rem 1rem;
   background: rgba(255, 255, 255, 0.82);
   box-shadow: 0 14px 28px rgba(39, 31, 74, 0.055);
 }
@@ -2389,7 +2398,7 @@ a {
 .community-card {
   position: relative;
   overflow: hidden;
-  padding: 1.25rem;
+  padding: 2rem;
 }
 
 .info-card {
@@ -2452,8 +2461,6 @@ a {
 }
 
 .step-card {
-  min-height: 292px;
-  padding: 1.2rem;
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.9), rgba(255, 250, 253, 0.78)),
     white;
@@ -2515,7 +2522,6 @@ a {
 
 .product-card {
   min-height: 420px;
-  padding: 1.3rem;
   background:
     linear-gradient(165deg, rgba(255, 255, 255, 0.94), rgba(248, 246, 255, 0.78)),
     white;
@@ -2720,7 +2726,7 @@ a {
 
 .featured-community {
   min-height: 230px;
-  padding: 1.35rem;
+  padding: 2rem;
   background:
     linear-gradient(155deg, rgba(255, 255, 255, 0.9), rgba(255, 228, 236, 0.48)),
     white;
@@ -2754,7 +2760,7 @@ a {
   gap: 0.82rem;
   align-items: flex-start;
   min-height: auto;
-  padding: 1rem;
+  padding: 1.25rem;
 }
 
 .small-community h3 {
@@ -2769,8 +2775,8 @@ a {
 
 .safety-section {
   display: grid;
-  grid-template-columns: minmax(320px, 0.82fr) minmax(620px, 1.18fr);
-  gap: 3rem;
+  grid-template-columns: 1fr 1fr;
+  gap: 4rem;
   align-items: center;
 }
 
@@ -2824,7 +2830,7 @@ a {
   min-height: 160px;
   border: 1px solid rgba(231, 224, 245, 0.88);
   border-radius: var(--radius-xl);
-  padding: 1.15rem;
+  padding: 1.75rem;
   background: rgba(255, 255, 255, 0.76);
   box-shadow: var(--shadow-card);
 }
@@ -2863,8 +2869,8 @@ a {
 
 .waitlist-section {
   display: grid;
-  grid-template-columns: minmax(320px, 0.76fr) minmax(680px, 1.24fr);
-  gap: 3rem;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 4rem;
   align-items: start;
 }
 
@@ -2873,8 +2879,15 @@ a {
   top: 7rem;
 }
 
+.waitlist-copy p {
+  max-width: 30rem;
+}
+
 .waitlist-form {
-  padding: 1.15rem;
+  max-width: 42rem;
+  width: 100%;
+  margin-left: auto;
+  padding: 1.5rem;
   background:
     linear-gradient(160deg, rgba(255, 255, 255, 0.92), rgba(248, 246, 255, 0.82)),
     white;
@@ -3074,7 +3087,7 @@ a {
   width: min(1160px, calc(100% - 2rem));
   margin: 0 auto;
   border-top: 1px solid rgba(31, 27, 46, 0.08);
-  padding: 2.2rem 0 3.2rem;
+  padding: 4rem 0;
   color: var(--muted);
 }
 
@@ -3264,13 +3277,13 @@ a {
 
 @media (max-width: 1320px) {
   .app-shell {
-    grid-template-columns: 108px minmax(0, 1fr) 174px;
-    gap: 0.68rem;
-    padding: 0.72rem;
+    grid-template-columns: 160px minmax(0, 1fr) 240px;
+    gap: 1rem;
+    padding: 1.25rem;
   }
 
   .test-drive-shell {
-    grid-template-columns: 132px minmax(0, 1fr) 210px;
+    grid-template-columns: 200px minmax(0, 1fr) 280px;
   }
 }
 
@@ -3302,7 +3315,7 @@ a {
   }
 
   .app-shell {
-    grid-template-columns: 112px minmax(0, 1fr);
+    grid-template-columns: 160px minmax(0, 1fr);
   }
 
   .mock-right {
@@ -3312,7 +3325,7 @@ a {
   }
 
   .test-drive-shell {
-    grid-template-columns: 128px minmax(0, 1fr);
+    grid-template-columns: 200px minmax(0, 1fr);
   }
 
   .invite-dashboard,
