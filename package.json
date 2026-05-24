@@ -16,5 +16,6 @@
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
-  }
+  },
+  "heroku-postbuild": "npm --workspace apps/api run prisma:generate"
 }
