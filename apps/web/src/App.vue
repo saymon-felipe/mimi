@@ -1,6 +1,13 @@
 <script setup>
 import { computed, nextTick, onBeforeUnmount, onMounted, reactive, ref } from 'vue';
-import { submitWaitlistLead } from './lib/api';
+import {
+  fetchAdminDashboard,
+  loginAdmin,
+  logoutAdmin,
+  registerAdmin,
+  submitContactMessage,
+  submitWaitlistLead
+} from './lib/api';
 import { captureEvent, getAttribution } from './lib/analytics';
 import iconColored from './assets/img/icons/icon-colored.png';
 import iconLight from './assets/img/icons/icon-light.png';
@@ -19,6 +26,7 @@ const observers = [];
 const transientPostTimeouts = [];
 let demoInterval;
 let toastTimeout;
+let composerModalCloseTimeout;
 
 const attribution = reactive({
   source: 'landing',
@@ -48,6 +56,38 @@ const isSubmitting = ref(false);
 const errorMessage = ref('');
 const successMessage = ref('');
 const formStarted = ref(false);
+const currentPage = ref('home');
+const mobileMenuOpen = ref(false);
+const headerRef = ref(null);
+const composerModalOpen = ref(false);
+const composerModalRendered = ref(false);
+const composerModalClosing = ref(false);
+const contactForm = reactive({
+  name: '',
+  email: '',
+  subject: '',
+  message: ''
+});
+const contactSubmitting = ref(false);
+const contactError = ref('');
+const contactSuccess = ref('');
+const adminToken = ref(localStorage.getItem('mimi_admin_token') || '');
+const adminUser = ref(null);
+const adminDashboard = ref(null);
+const adminLoading = ref(false);
+const adminError = ref('');
+const adminSuccess = ref('');
+const adminLoginForm = reactive({
+  email: '',
+  password: ''
+});
+const adminRegisterForm = reactive({
+  name: '',
+  email: '',
+  password: ''
+});
+const adminRegisterSubmitting = ref(false);
+const adminLoginSubmitting = ref(false);
 
 const totalSteps = 3;
 
@@ -75,6 +115,57 @@ const navLinks = [
   { label: 'Segurança', target: 'seguranca' },
   { label: 'Lista de espera', target: 'lista-de-espera' }
 ];
+
+const legalPages = {
+  termos: {
+    eyebrow: 'Termos',
+    title: 'Termos de uso',
+    intro:
+      'Estes termos explicam as regras básicas para participar da validação do Mimi enquanto o produto ainda está em beta fechado.',
+    sections: [
+      {
+        title: 'Uso do beta',
+        text: 'O Mimi está em fase de validação. Recursos, convites e acesso podem mudar conforme aprendemos com a comunidade.'
+      },
+      {
+        title: 'Comunidade 18+',
+        text: 'A primeira versão do Mimi é planejada para pessoas adultas. Conteúdos e interações devem respeitar limites, consentimento e legislação aplicável.'
+      },
+      {
+        title: 'Conduta',
+        text: 'Assédio, fetichização invasiva, discurso de ódio, exposição de dados pessoais e qualquer tentativa de burlar ferramentas de segurança não são aceitos.'
+      },
+      {
+        title: 'Conteúdo',
+        text: 'Cada pessoa é responsável pelo que publica. O Mimi poderá remover conteúdos ou limitar acesso quando houver risco para a comunidade.'
+      }
+    ]
+  },
+  privacidade: {
+    eyebrow: 'Privacidade',
+    title: 'Política de privacidade',
+    intro:
+      'A lista de espera coleta apenas dados necessários para validar o produto, priorizar convites e entender as necessidades da comunidade.',
+    sections: [
+      {
+        title: 'Dados coletados',
+        text: 'Podemos coletar nome ou apelido, e-mail, idade, cidade/estado, identidade declarada, interesses, contato social opcional e respostas abertas.'
+      },
+      {
+        title: 'Como usamos',
+        text: 'Usamos os dados para operar a lista de espera, chamar pessoas para o beta, melhorar posicionamento do produto e responder contatos enviados pelo site.'
+      },
+      {
+        title: 'Compartilhamento',
+        text: 'Não vendemos dados pessoais. Dados podem ser tratados por ferramentas técnicas necessárias para hospedagem, analytics e operação da API.'
+      },
+      {
+        title: 'Controle',
+        text: 'Você pode pedir correção ou remoção dos seus dados entrando em contato pela página de contato.'
+      }
+    ]
+  }
+};
 
 const heroSignals = ['Feed em vez de swipe', 'DM só por convite', 'Comunidades desde o beta', '18+'];
 
@@ -408,6 +499,8 @@ const simulatedPosts = [
 
 const demoPosts = ref(richerDemoSeedPosts.map((post) => ({ ...post, comments: [...post.comments], media: [...post.media] })));
 const demoView = ref('feed');
+const activeTestPanel = ref('main');
+const activeTestPanelDirection = ref('next');
 const activeCommunity = ref('Femboys BR');
 const composerText = ref('');
 const composerImage = ref('');
@@ -434,6 +527,8 @@ let chatTimeout;
 let chatCloseTimeout;
 let chatMessageId = 0;
 let simulatedPostIndex = 0;
+let testPanelPointerStartX = 0;
+let testPanelPointerStartY = 0;
 
 const connectionInvites = reactive([
   {
@@ -454,6 +549,7 @@ const conversations = reactive([
     avatar: sayuProfile,
     unread: 0,
     typing: false,
+    replyCursor: 0,
     replies: [
       'eu vi seu mimo no post e fiquei todo felizinho',
       'você também gosta desse tipo de look mais confortável?',
@@ -471,6 +567,7 @@ const conversations = reactive([
     avatar: liaProfile,
     unread: 0,
     typing: false,
+    replyCursor: 0,
     replies: [
       'eu queria que mais redes fossem assim, com contexto antes de DM',
       'você também sente que comunidades deixam tudo mais leve?',
@@ -484,6 +581,7 @@ const conversations = reactive([
 ]);
 
 const currentStepMeta = computed(() => formSteps[currentStep.value - 1]);
+const currentLegalPage = computed(() => legalPages[currentPage.value] || null);
 const showCustomIdentity = computed(() => form.identity === 'Prefiro escrever');
 const featuredCommunities = computed(() => communities.slice(0, 3));
 const secondaryCommunities = computed(() => communities.slice(3));
@@ -522,8 +620,114 @@ const demoVisiblePosts = computed(() => {
 
   return demoPosts.value;
 });
+const activeTestPanelLabel = computed(() => {
+  if (demoView.value === 'community') {
+    return activeCommunity.value;
+  }
+
+  if (demoView.value === 'invites') {
+    return 'Pedidos';
+  }
+
+  return 'Feed';
+});
+const testPanelTabs = computed(() => [
+  {
+    id: 'sidebar',
+    label: 'Explorar',
+    ariaLabel: 'Explorar feeds, comunidades e convites',
+    icon: 'menu'
+  },
+  {
+    id: 'main',
+    label: activeTestPanelLabel.value,
+    ariaLabel: `${activeTestPanelLabel.value} aberto no test-drive`,
+    icon: 'home'
+  },
+  {
+    id: 'right',
+    label: 'Sugestões',
+    ariaLabel: 'Sugestões, afinidades e segurança',
+    icon: 'spark'
+  }
+]);
+
+function resolvePageFromPath(pathname = window.location.pathname) {
+  const cleanPath = pathname.replace(/\/+$/, '') || '/';
+
+  if (cleanPath === '/admin') {
+    return 'admin';
+  }
+
+  if (cleanPath === '/admin/login') {
+    return 'admin-login';
+  }
+
+  if (cleanPath === '/admin/register') {
+    return 'admin-register';
+  }
+
+  if (cleanPath === '/termos') {
+    return 'termos';
+  }
+
+  if (cleanPath === '/privacidade') {
+    return 'privacidade';
+  }
+
+  if (cleanPath === '/contato') {
+    return 'contato';
+  }
+
+  return 'home';
+}
+
+function setPage(page, options = {}) {
+  currentPage.value = page;
+  mobileMenuOpen.value = false;
+
+  const pathByPage = {
+    home: '/',
+    admin: '/admin',
+    'admin-login': '/admin/login',
+    'admin-register': '/admin/register',
+    termos: '/termos',
+    privacidade: '/privacidade',
+    contato: '/contato'
+  };
+  const nextPath = pathByPage[page] || '/';
+
+  if (!options.replace && window.location.pathname !== nextPath) {
+    window.history.pushState({ page }, '', nextPath);
+  } else if (options.replace) {
+    window.history.replaceState({ page }, '', nextPath);
+  }
+
+  nextTick(() => {
+    window.scrollTo({ top: 0, behavior: options.instant ? 'auto' : 'smooth' });
+  });
+}
+
+function toggleMobileMenu() {
+  mobileMenuOpen.value = !mobileMenuOpen.value;
+}
+
+function closeMobileMenuOnOutsideClick(event) {
+  if (!mobileMenuOpen.value || headerRef.value?.contains(event.target)) {
+    return;
+  }
+
+  mobileMenuOpen.value = false;
+}
 
 function scrollToSection(target) {
+  if (currentPage.value !== 'home') {
+    setPage('home', { instant: true });
+    nextTick(() => scrollToSection(target));
+    return;
+  }
+
+  mobileMenuOpen.value = false;
   document.getElementById(target)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -542,13 +746,58 @@ function showDemoToast(message) {
 
 function setDemoView(view) {
   demoView.value = view;
+  setActiveTestPanel('main');
   showDemoToast(view === 'feed' ? 'Feed Pra Você aberto.' : 'Área do Mimi atualizada.');
 }
 
 function openCommunity(name = 'Femboys BR') {
   activeCommunity.value = name;
   demoView.value = 'community';
+  setActiveTestPanel('main');
   showDemoToast(`${name} aberta no test-drive.`);
+}
+
+function setActiveTestPanel(panel) {
+  if (panel === activeTestPanel.value) {
+    return;
+  }
+
+  const currentIndex = testPanelTabs.value.findIndex((tab) => tab.id === activeTestPanel.value);
+  const nextIndex = testPanelTabs.value.findIndex((tab) => tab.id === panel);
+  activeTestPanelDirection.value = nextIndex >= currentIndex ? 'next' : 'prev';
+  activeTestPanel.value = panel;
+}
+
+function resetTestPanelPointer() {
+  testPanelPointerStartX = 0;
+  testPanelPointerStartY = 0;
+}
+
+function handleTestPanelPointerStart(event) {
+  testPanelPointerStartX = event.clientX;
+  testPanelPointerStartY = event.clientY;
+}
+
+function handleTestPanelPointerEnd(event) {
+  if (!testPanelPointerStartX) {
+    return;
+  }
+
+  const deltaX = event.clientX - testPanelPointerStartX;
+  const deltaY = event.clientY - testPanelPointerStartY;
+  resetTestPanelPointer();
+
+  if (Math.abs(deltaX) < 56 || Math.abs(deltaY) > Math.abs(deltaX) * 0.8) {
+    return;
+  }
+
+  const currentIndex = testPanelTabs.value.findIndex((tab) => tab.id === activeTestPanel.value);
+  const nextIndex = deltaX < 0 ? currentIndex + 1 : currentIndex - 1;
+  const nextTab = testPanelTabs.value[Math.max(0, Math.min(testPanelTabs.value.length - 1, nextIndex))];
+
+  if (nextTab && nextTab.id !== activeTestPanel.value) {
+    setActiveTestPanel(nextTab.id);
+  }
 }
 
 function markPostAsFresh(post) {
@@ -559,12 +808,30 @@ function markPostAsFresh(post) {
   transientPostTimeouts.push(timeout);
 }
 
+function openComposerModal() {
+  window.clearTimeout(composerModalCloseTimeout);
+  composerModalRendered.value = true;
+  composerModalClosing.value = false;
+  composerModalOpen.value = true;
+}
+
+function closeComposerModal() {
+  composerModalClosing.value = true;
+  composerModalOpen.value = false;
+  window.clearTimeout(composerModalCloseTimeout);
+  composerModalCloseTimeout = window.setTimeout(() => {
+    composerModalRendered.value = false;
+    composerModalClosing.value = false;
+  }, 220);
+}
+
 function publishDemoPost() {
   const text = composerText.value.trim();
 
   if (!text && !composerImage.value) {
     showDemoToast('Escreva algo ou adicione uma imagem para publicar.');
-    return;
+    openComposerModal();
+    return false;
   }
 
   const post = {
@@ -587,7 +854,9 @@ function publishDemoPost() {
   composerText.value = '';
   composerImage.value = '';
   composerImageName.value = '';
+  closeComposerModal();
   showDemoToast('Post publicado só neste test-drive.');
+  return true;
 }
 
 function handleDemoImageUpload(event) {
@@ -835,8 +1104,17 @@ function sendChatMessage() {
 }
 
 function receiveAutoMessage() {
-  const conversation = conversations[Math.floor(Math.random() * conversations.length)];
-  const text = conversation.replies[Math.floor(Math.random() * conversation.replies.length)];
+  const availableConversations = conversations.filter(
+    (conversation) => conversation.replyCursor < conversation.replies.length && !conversation.typing
+  );
+
+  if (availableConversations.length === 0) {
+    return false;
+  }
+
+  const conversation = availableConversations[Math.floor(Math.random() * availableConversations.length)];
+  const text = conversation.replies[conversation.replyCursor];
+  conversation.replyCursor += 1;
 
   conversation.typing = true;
   window.setTimeout(() => {
@@ -847,13 +1125,16 @@ function receiveAutoMessage() {
       conversation.unread += 1;
     }
   }, 900 + Math.floor(Math.random() * 900));
+
+  return true;
 }
 
 function scheduleChatMessage() {
   window.clearTimeout(chatTimeout);
   chatTimeout = window.setTimeout(() => {
-    receiveAutoMessage();
-    scheduleChatMessage();
+    if (receiveAutoMessage()) {
+      scheduleChatMessage();
+    }
   }, 6500 + Math.floor(Math.random() * 8500));
 }
 
@@ -1038,6 +1319,161 @@ function handleStepSubmit() {
   void handleSubmit();
 }
 
+async function handleContactSubmit() {
+  contactError.value = '';
+  contactSuccess.value = '';
+
+  if (!contactForm.name.trim() || !contactForm.email.trim() || !contactForm.subject.trim() || !contactForm.message.trim()) {
+    contactError.value = 'Preencha todos os campos para enviar sua mensagem.';
+    return;
+  }
+
+  if (!isEmailValid(contactForm.email)) {
+    contactError.value = 'Informe um e-mail válido.';
+    return;
+  }
+
+  contactSubmitting.value = true;
+
+  try {
+    await submitContactMessage({
+      ...contactForm,
+      source: 'contact_page'
+    });
+
+    contactSuccess.value = 'Mensagem enviada. Obrigado por falar com o Mimi.';
+    contactForm.name = '';
+    contactForm.email = '';
+    contactForm.subject = '';
+    contactForm.message = '';
+  } catch (error) {
+    contactError.value = error.message || 'Não foi possível enviar sua mensagem agora.';
+  } finally {
+    contactSubmitting.value = false;
+  }
+}
+
+function formatDateTime(value) {
+  if (!value) {
+    return '';
+  }
+
+  return new Intl.DateTimeFormat('pt-BR', {
+    dateStyle: 'short',
+    timeStyle: 'short'
+  }).format(new Date(value));
+}
+
+function formatListValue(value) {
+  if (Array.isArray(value)) {
+    return value.join(', ');
+  }
+
+  return value || '—';
+}
+
+function storeAdminSession(data) {
+  adminToken.value = data.token;
+  adminUser.value = data.user;
+  localStorage.setItem('mimi_admin_token', data.token);
+}
+
+function clearAdminSession() {
+  adminToken.value = '';
+  adminUser.value = null;
+  adminDashboard.value = null;
+  localStorage.removeItem('mimi_admin_token');
+}
+
+async function loadAdminDashboard() {
+  adminError.value = '';
+
+  if (!adminToken.value) {
+    adminError.value = 'Faça login para acessar o dashboard.';
+    return;
+  }
+
+  adminLoading.value = true;
+
+  try {
+    adminDashboard.value = await fetchAdminDashboard(adminToken.value);
+  } catch (error) {
+    adminError.value = error.message || 'Não foi possível carregar o dashboard.';
+
+    if (error.status === 401 || error.status === 403) {
+      clearAdminSession();
+    }
+  } finally {
+    adminLoading.value = false;
+  }
+}
+
+async function handleAdminLogin() {
+  adminError.value = '';
+  adminSuccess.value = '';
+
+  if (!adminLoginForm.email.trim() || !adminLoginForm.password.trim()) {
+    adminError.value = 'Informe e-mail e senha.';
+    return;
+  }
+
+  adminLoginSubmitting.value = true;
+
+  try {
+    const data = await loginAdmin({
+      email: adminLoginForm.email,
+      password: adminLoginForm.password
+    });
+
+    storeAdminSession(data);
+    adminLoginForm.password = '';
+    setPage('admin');
+    await loadAdminDashboard();
+  } catch (error) {
+    adminError.value = error.message || 'Não foi possível fazer login.';
+  } finally {
+    adminLoginSubmitting.value = false;
+  }
+}
+
+async function handleAdminRegister() {
+  adminError.value = '';
+  adminSuccess.value = '';
+
+  if (!adminRegisterForm.name.trim() || !adminRegisterForm.email.trim() || !adminRegisterForm.password.trim()) {
+    adminError.value = 'Preencha nome, e-mail e senha.';
+    return;
+  }
+
+  adminRegisterSubmitting.value = true;
+
+  try {
+    await registerAdmin({
+      name: adminRegisterForm.name,
+      email: adminRegisterForm.email,
+      password: adminRegisterForm.password
+    });
+
+    adminSuccess.value = 'Usuário criado. Agora altere admin = 1 para esse e-mail no banco e faça login.';
+    adminRegisterForm.name = '';
+    adminRegisterForm.email = '';
+    adminRegisterForm.password = '';
+  } catch (error) {
+    adminError.value = error.message || 'Não foi possível criar o usuário.';
+  } finally {
+    adminRegisterSubmitting.value = false;
+  }
+}
+
+async function handleAdminLogout() {
+  if (adminToken.value) {
+    await logoutAdmin(adminToken.value).catch(() => {});
+  }
+
+  clearAdminSession();
+  setPage('admin-login');
+}
+
 function observeSection(elementRef, eventName) {
   if (!('IntersectionObserver' in window) || !elementRef.value) {
     return;
@@ -1057,20 +1493,39 @@ function observeSection(elementRef, eventName) {
   observers.push(observer);
 }
 
+function handlePopState() {
+  currentPage.value = resolvePageFromPath();
+  mobileMenuOpen.value = false;
+
+  if (currentPage.value === 'admin') {
+    void loadAdminDashboard();
+  }
+}
+
 onMounted(() => {
+  setPage(resolvePageFromPath(), { replace: true, instant: true });
+  window.addEventListener('popstate', handlePopState);
+  document.addEventListener('pointerdown', closeMobileMenuOnOutsideClick);
   Object.assign(attribution, getAttribution());
   captureEvent('landing_viewed', attribution);
   observeSection(safetySection, 'safety_section_viewed');
   observeSection(mockupSection, 'mockup_section_viewed');
   demoInterval = window.setInterval(addSimulatedPost, 9500);
   scheduleChatMessage();
+
+  if (currentPage.value === 'admin') {
+    void loadAdminDashboard();
+  }
 });
 
 onBeforeUnmount(() => {
+  window.removeEventListener('popstate', handlePopState);
+  document.removeEventListener('pointerdown', closeMobileMenuOnOutsideClick);
   observers.forEach((observer) => observer.disconnect());
   window.clearInterval(demoInterval);
   window.clearTimeout(chatTimeout);
   window.clearTimeout(chatCloseTimeout);
+  window.clearTimeout(composerModalCloseTimeout);
   window.clearTimeout(toastTimeout);
   transientPostTimeouts.forEach((timeout) => window.clearTimeout(timeout));
 });
@@ -1078,8 +1533,8 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="site-shell">
-    <header class="header">
-      <a class="brand" href="#top" aria-label="Mimi início">
+    <header ref="headerRef" class="header" :class="{ 'menu-open': mobileMenuOpen }">
+      <a class="brand" href="/" aria-label="Mimi início" @click.prevent="setPage('home')">
         <span class="brand-mark" aria-hidden="true">
           <img :src="iconColored" alt="" />
         </span>
@@ -1092,12 +1547,27 @@ onBeforeUnmount(() => {
         </button>
       </nav>
 
-      <button class="button button-small button-primary" type="button" @click="handleWaitlistCta('header')">
+      <button class="mobile-menu-button" type="button" :aria-expanded="mobileMenuOpen" aria-controls="mobile-menu" aria-label="Abrir menu" @click="toggleMobileMenu">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <button class="button button-small button-primary header-cta" type="button" @click="handleWaitlistCta('header')">
         Entrar na lista
       </button>
+
+      <nav id="mobile-menu" class="mobile-menu" aria-label="Menu principal mobile">
+        <button v-for="link in navLinks" :key="`mobile-${link.target}`" type="button" @click="scrollToSection(link.target)">
+          {{ link.label }}
+        </button>
+        <button type="button" @click="setPage('termos')">Termos</button>
+        <button type="button" @click="setPage('privacidade')">Privacidade</button>
+        <button type="button" @click="setPage('contato')">Contato</button>
+      </nav>
     </header>
 
-    <main id="top">
+    <main v-if="currentPage === 'home'" id="top">
       <section class="hero section-band">
         <div class="hero-copy">
           <p class="eyebrow">Rede social de afinidade e comunidade</p>
@@ -1136,9 +1606,9 @@ onBeforeUnmount(() => {
           <div class="hero-feed-card hero-float-card delay-one">
             <strong>Nami em Looks e estética</strong>
             <div class="hero-media-strip">
-              <span></span>
-              <span></span>
-              <span></span>
+              <span><img :src="namiPhotoOne" alt="Foto da Nami no Mimi" /></span>
+              <span><img :src="namiPhotoTwo" alt="Detalhe do look da Nami" /></span>
+              <span><img :src="namiPhotoThree" alt="Outra foto da Nami" /></span>
             </div>
             <p>Look pastel + jaqueta oversized. Aceito ideias de acessórios.</p>
           </div>
@@ -1233,9 +1703,9 @@ onBeforeUnmount(() => {
                     <span class="post-chip">convite aberto</span>
                   </div>
                   <div class="fake-image">
-                    <span></span>
-                    <span></span>
-                    <span></span>
+                    <span><img :src="namiPhotoOne" alt="Foto da Nami" /></span>
+                    <span><img :src="namiPhotoTwo" alt="Detalhe da Nami" /></span>
+                    <span><img :src="namiPhotoThree" alt="Foto complementar da Nami" /></span>
                   </div>
                   <p>Look pastel com jaqueta oversized. Aceito ideias de acessórios.</p>
                   <div class="comment-preview">
@@ -1348,8 +1818,25 @@ onBeforeUnmount(() => {
             <span>test-drive em memória</span>
           </div>
 
-          <div class="test-drive-shell">
-            <aside class="test-sidebar">
+          <div
+            class="test-drive-shell"
+            :class="[`active-panel-${activeTestPanel}`, `panel-direction-${activeTestPanelDirection}`]"
+            @pointerdown="handleTestPanelPointerStart"
+            @pointerup="handleTestPanelPointerEnd"
+            @pointercancel="resetTestPanelPointer"
+          >
+            <div class="test-mobile-brand" aria-hidden="true">
+              <img :src="iconColored" alt="" />
+              <span>Mimi</span>
+            </div>
+
+            <aside
+              id="test-panel-sidebar"
+              class="test-sidebar"
+              :class="{ active: activeTestPanel === 'sidebar' }"
+              role="tabpanel"
+              aria-label="Menu do protótipo"
+            >
               <div class="mini-logo">
                 <span aria-hidden="true"><img :src="iconColored" alt="" /></span>
                 Mimi
@@ -1393,7 +1880,13 @@ onBeforeUnmount(() => {
               </div>
             </aside>
 
-            <main class="test-main">
+            <main
+              id="test-panel-main"
+              class="test-main"
+              :class="{ active: activeTestPanel === 'main' }"
+              role="tabpanel"
+              aria-label="Conteúdo do protótipo"
+            >
               <div v-if="demoView !== 'invites'" class="test-topbar">
                 <div>
                   <span class="muted-label">{{ demoView === 'community' ? 'Comunidade' : 'Feed principal' }}</span>
@@ -1483,24 +1976,10 @@ onBeforeUnmount(() => {
                 <section class="demo-composer">
                   <span class="demo-avatar user-avatar" aria-label="Seu perfil"></span>
                   <div class="composer-body">
-                    <textarea
-                      v-model="composerText"
-                      rows="3"
-                      placeholder="Compartilhe algo com o Mimi..."
-                    ></textarea>
-
-                    <div v-if="composerImage" class="composer-image-preview">
-                      <img :src="composerImage" alt="Imagem anexada ao post" />
-                      <button type="button" @click="removeDemoImage">Remover imagem</button>
-                    </div>
-
-                    <div class="composer-tools">
-                      <label class="upload-pill">
-                        <input type="file" accept="image/*" @change="handleDemoImageUpload" />
-                        <span>{{ composerImageName || 'Adicionar imagem' }}</span>
-                      </label>
-                      <button type="button" @click="publishDemoPost">Publicar</button>
-                    </div>
+                    <button class="composer-trigger" type="button" @click="openComposerModal">
+                      <span>{{ composerText || 'Compartilhe algo com o Mimi...' }}</span>
+                      <em v-if="composerImageName">{{ composerImageName }}</em>
+                    </button>
                   </div>
                 </section>
 
@@ -1580,7 +2059,13 @@ onBeforeUnmount(() => {
               </template>
             </main>
 
-            <aside class="test-right">
+            <aside
+              id="test-panel-right"
+              class="test-right"
+              :class="{ active: activeTestPanel === 'right' }"
+              role="tabpanel"
+              aria-label="Extras do protótipo"
+            >
               <div class="right-panel">
                 <span class="muted-label">Comunidade sugerida</span>
                 <strong>Femboys BR</strong>
@@ -1611,9 +2096,84 @@ onBeforeUnmount(() => {
                 <p>Conexão precisa de consentimento.</p>
               </div>
             </aside>
+
+            <nav class="test-mobile-dock" aria-label="Navegação do protótipo">
+              <button class="dock-feed" type="button" :class="{ active: demoView === 'feed' }" @click="setDemoView('feed')">
+                <span></span>
+                <em>Feed</em>
+              </button>
+              <button class="dock-community" type="button" :class="{ active: demoView === 'community' }" @click="openCommunity('Femboys BR')">
+                <span></span>
+                <em>Comunidades</em>
+              </button>
+              <button class="dock-compose" type="button" @click="openComposerModal">
+                <span></span>
+                <em>Postar</em>
+              </button>
+              <button class="dock-invites" type="button" :class="{ active: demoView === 'invites' }" @click="setDemoView('invites')">
+                <span></span>
+                <em>Convites</em>
+              </button>
+              <button class="dock-chat" type="button" @click="openChat(activeChatId)">
+                <span></span>
+                <em>Chat</em>
+              </button>
+            </nav>
+
+            <nav class="test-panel-tabs" role="tablist" aria-label="Áreas do test-drive">
+              <button
+                v-for="tab in testPanelTabs"
+                :key="tab.id"
+                type="button"
+                role="tab"
+                :aria-selected="activeTestPanel === tab.id"
+                :aria-controls="`test-panel-${tab.id}`"
+                :aria-label="tab.ariaLabel"
+                :class="[`panel-tab-${tab.icon}`, { active: activeTestPanel === tab.id }]"
+                @click="setActiveTestPanel(tab.id)"
+              >
+                <span aria-hidden="true"></span>
+                <em>{{ tab.label }}</em>
+              </button>
+            </nav>
           </div>
 
           <p v-if="demoToast" class="demo-toast">{{ demoToast }}</p>
+
+          <div
+            v-if="composerModalRendered"
+            class="composer-modal"
+            :class="{ closing: composerModalClosing }"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Criar post no Mimi"
+            @click.self="closeComposerModal"
+          >
+            <form class="composer-modal-card" @submit.prevent="publishDemoPost">
+              <header>
+                <div>
+                  <span class="muted-label">Novo post</span>
+                  <strong>Compartilhe no Mimi</strong>
+                </div>
+                <button type="button" aria-label="Fechar compositor" @click="closeComposerModal">Fechar</button>
+              </header>
+
+              <textarea v-model="composerText" rows="5" placeholder="Compartilhe algo com o Mimi..."></textarea>
+
+              <div v-if="composerImage" class="composer-image-preview">
+                <img :src="composerImage" alt="Imagem anexada ao post" />
+                <button type="button" @click="removeDemoImage">Remover imagem</button>
+              </div>
+
+              <div class="composer-tools">
+                <label class="upload-pill">
+                  <input type="file" accept="image/*" @change="handleDemoImageUpload" />
+                  <span>{{ composerImageName || 'Adicionar imagem' }}</span>
+                </label>
+                <button type="submit">Publicar</button>
+              </div>
+            </form>
+          </div>
 
           <div v-if="mediaModal.isOpen" class="media-modal" role="dialog" aria-modal="true" @click.self="closeMediaModal">
             <button class="media-modal-close" type="button" aria-label="Fechar imagem" @click="closeMediaModal">Fechar</button>
@@ -1948,6 +2508,200 @@ onBeforeUnmount(() => {
       </section>
     </main>
 
+    <main v-else-if="currentPage.startsWith('admin')" class="admin-page">
+      <section v-if="currentPage === 'admin-register'" class="admin-auth-shell">
+        <button class="back-link" type="button" @click="setPage('home')">Voltar para o Mimi</button>
+        <div>
+          <p class="eyebrow">Admin</p>
+          <h1>Criar acesso</h1>
+          <p class="legal-intro">
+            Cadastre seu e-mail e senha. O acesso ao dashboard só abre depois que `admin = 1` for ativado no banco.
+          </p>
+        </div>
+
+        <form class="admin-form" @submit.prevent="handleAdminRegister">
+          <label>
+            <span>Nome *</span>
+            <input v-model="adminRegisterForm.name" type="text" autocomplete="name" placeholder="Seu nome" />
+          </label>
+          <label>
+            <span>E-mail *</span>
+            <input v-model="adminRegisterForm.email" type="email" autocomplete="email" placeholder="voce@email.com" />
+          </label>
+          <label>
+            <span>Senha *</span>
+            <input v-model="adminRegisterForm.password" type="password" autocomplete="new-password" placeholder="Mínimo 8 caracteres" />
+          </label>
+
+          <p v-if="adminError" class="form-message error">{{ adminError }}</p>
+          <p v-if="adminSuccess" class="form-message success">{{ adminSuccess }}</p>
+
+          <button class="button button-primary" type="submit" :disabled="adminRegisterSubmitting">
+            {{ adminRegisterSubmitting ? 'Criando...' : 'Criar usuário' }}
+          </button>
+          <button class="button button-ghost" type="button" @click="setPage('admin-login')">Já tenho acesso</button>
+        </form>
+      </section>
+
+      <section v-else-if="currentPage === 'admin-login'" class="admin-auth-shell">
+        <button class="back-link" type="button" @click="setPage('home')">Voltar para o Mimi</button>
+        <div>
+          <p class="eyebrow">Admin</p>
+          <h1>Entrar</h1>
+          <p class="legal-intro">Acesse o painel para ver contatos do site e inscrições do beta.</p>
+        </div>
+
+        <form class="admin-form" @submit.prevent="handleAdminLogin">
+          <label>
+            <span>E-mail *</span>
+            <input v-model="adminLoginForm.email" type="email" autocomplete="email" placeholder="voce@email.com" />
+          </label>
+          <label>
+            <span>Senha *</span>
+            <input v-model="adminLoginForm.password" type="password" autocomplete="current-password" placeholder="Sua senha" />
+          </label>
+
+          <p v-if="adminError" class="form-message error">{{ adminError }}</p>
+
+          <button class="button button-primary" type="submit" :disabled="adminLoginSubmitting">
+            {{ adminLoginSubmitting ? 'Entrando...' : 'Entrar no admin' }}
+          </button>
+          <button class="button button-ghost" type="button" @click="setPage('admin-register')">Criar usuário</button>
+        </form>
+      </section>
+
+      <section v-else class="admin-dashboard">
+        <div class="admin-dashboard-top">
+          <div>
+            <p class="eyebrow">Admin</p>
+            <h1>Dashboard</h1>
+            <p class="legal-intro">Contatos recebidos pelo site e inscrições na lista beta.</p>
+          </div>
+          <div class="admin-actions">
+            <button class="button button-ghost" type="button" @click="loadAdminDashboard">Atualizar</button>
+            <button class="button button-primary" type="button" @click="handleAdminLogout">Sair</button>
+          </div>
+        </div>
+
+        <div v-if="!adminToken" class="admin-empty">
+          <p class="form-message error">Faça login como admin para acessar esta área.</p>
+          <button class="button button-primary" type="button" @click="setPage('admin-login')">Ir para login</button>
+        </div>
+
+        <template v-else>
+          <p v-if="adminError" class="form-message error">{{ adminError }}</p>
+          <p v-if="adminLoading" class="admin-loading">Carregando dashboard...</p>
+
+          <div v-if="adminDashboard" class="admin-stats">
+            <article>
+              <span>Contatos</span>
+              <strong>{{ adminDashboard.stats.contactCount }}</strong>
+            </article>
+            <article>
+              <span>Inscrições beta</span>
+              <strong>{{ adminDashboard.stats.waitlistCount }}</strong>
+            </article>
+          </div>
+
+          <div v-if="adminDashboard" class="admin-data-grid">
+            <section class="admin-panel">
+              <header>
+                <h2>Contatos do site</h2>
+                <span>{{ adminDashboard.contacts.length }} recentes</span>
+              </header>
+              <div class="admin-list">
+                <article v-for="contact in adminDashboard.contacts" :key="contact.id" class="admin-record">
+                  <div>
+                    <strong>{{ contact.name }}</strong>
+                    <span>{{ contact.email }} · {{ formatDateTime(contact.createdAt) }}</span>
+                  </div>
+                  <h3>{{ contact.subject }}</h3>
+                  <p>{{ contact.message }}</p>
+                </article>
+              </div>
+            </section>
+
+            <section class="admin-panel">
+              <header>
+                <h2>Lista beta</h2>
+                <span>{{ adminDashboard.waitlist.length }} recentes</span>
+              </header>
+              <div class="admin-list">
+                <article v-for="lead in adminDashboard.waitlist" :key="lead.id" class="admin-record">
+                  <div>
+                    <strong>{{ lead.name }} · {{ lead.age }}</strong>
+                    <span>{{ lead.email }} · {{ formatDateTime(lead.createdAt) }}</span>
+                  </div>
+                  <dl>
+                    <div><dt>Cidade</dt><dd>{{ lead.cityState }}</dd></div>
+                    <div><dt>Identidade</dt><dd>{{ lead.identity }}</dd></div>
+                    <div><dt>Busca</dt><dd>{{ formatListValue(lead.lookingFor) }}</dd></div>
+                    <div><dt>Conhecer</dt><dd>{{ formatListValue(lead.wantsToMeet) }}</dd></div>
+                    <div><dt>Beta</dt><dd>{{ lead.betaInterest }}</dd></div>
+                  </dl>
+                  <p v-if="lead.biggestPain">{{ lead.biggestPain }}</p>
+                  <p v-if="lead.comment">{{ lead.comment }}</p>
+                </article>
+              </div>
+            </section>
+          </div>
+        </template>
+      </section>
+    </main>
+
+    <main v-else class="legal-page">
+      <section v-if="currentLegalPage" class="legal-shell">
+        <button class="back-link" type="button" @click="setPage('home')">Voltar para o Mimi</button>
+        <p class="eyebrow">{{ currentLegalPage.eyebrow }}</p>
+        <h1>{{ currentLegalPage.title }}</h1>
+        <p class="legal-intro">{{ currentLegalPage.intro }}</p>
+
+        <div class="legal-grid">
+          <article v-for="section in currentLegalPage.sections" :key="section.title">
+            <h2>{{ section.title }}</h2>
+            <p>{{ section.text }}</p>
+          </article>
+        </div>
+      </section>
+
+      <section v-else class="legal-shell contact-shell">
+        <button class="back-link" type="button" @click="setPage('home')">Voltar para o Mimi</button>
+        <div class="contact-copy">
+          <p class="eyebrow">Contato</p>
+          <h1>Fale com o Mimi</h1>
+          <p class="legal-intro">
+            Use este canal para dúvidas sobre beta, privacidade, parcerias ou remoção de dados da lista de espera.
+          </p>
+        </div>
+
+        <form class="contact-form" @submit.prevent="handleContactSubmit">
+          <label>
+            <span>Nome *</span>
+            <input v-model="contactForm.name" type="text" autocomplete="name" placeholder="Como podemos te chamar?" />
+          </label>
+          <label>
+            <span>E-mail *</span>
+            <input v-model="contactForm.email" type="email" autocomplete="email" placeholder="voce@email.com" />
+          </label>
+          <label>
+            <span>Assunto *</span>
+            <input v-model="contactForm.subject" type="text" placeholder="Sobre o que quer falar?" />
+          </label>
+          <label>
+            <span>Mensagem *</span>
+            <textarea v-model="contactForm.message" rows="6" placeholder="Escreva sua mensagem"></textarea>
+          </label>
+
+          <p v-if="contactError" class="form-message error">{{ contactError }}</p>
+          <p v-if="contactSuccess" class="form-message success">{{ contactSuccess }}</p>
+
+          <button class="button button-primary" type="submit" :disabled="contactSubmitting">
+            {{ contactSubmitting ? 'Enviando...' : 'Enviar mensagem' }}
+          </button>
+        </form>
+      </section>
+    </main>
+
     <footer class="footer">
       <div class="footer-brand">
         <span class="brand-mark footer-mark" aria-hidden="true">
@@ -1957,9 +2711,9 @@ onBeforeUnmount(() => {
         <p>Menos swipe. Mais presença.</p>
       </div>
       <nav aria-label="Links de rodapé">
-        <a href="#top">Termos</a>
-        <a href="#top">Privacidade</a>
-        <a href="#top">Contato</a>
+        <a href="/termos" @click.prevent="setPage('termos')">Termos</a>
+        <a href="/privacidade" @click.prevent="setPage('privacidade')">Privacidade</a>
+        <a href="/contato" @click.prevent="setPage('contato')">Contato</a>
       </nav>
       <p>Mimi está em fase de validação. Ainda não é uma plataforma aberta ao público.</p>
     </footer>

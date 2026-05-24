@@ -36,6 +36,8 @@ Variaveis principais:
 - `VITE_API_URL`: URL base da API usada pelo frontend.
 - `VITE_POSTHOG_KEY`: chave opcional do PostHog. Se ficar vazia, o site funciona normalmente sem analytics.
 - `VITE_POSTHOG_HOST`: host do PostHog, padrao `https://app.posthog.com`.
+- `CONTACT_NOTIFICATION_EMAIL`: e-mail que recebe mensagens da pagina de contato, padrao `linnubr@gmail.com`.
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`: configuracao SMTP para envio dos contatos por e-mail.
 
 ## Banco e Prisma
 
@@ -46,7 +48,7 @@ npm run prisma:generate
 npm run prisma:migrate
 ```
 
-O migrate cria a tabela `WaitlistLead` com e-mail unico para evitar duplicidade na lista de espera.
+O migrate cria as tabelas de lista de espera, contatos e admin.
 
 ## Rodar localmente
 
@@ -67,6 +69,7 @@ URLs padrao:
 
 - Frontend: `http://localhost:5173`
 - API health check: `http://localhost:3333/api/health`
+- Admin: `http://localhost:5173/admin`
 
 ## Build
 
@@ -115,6 +118,25 @@ Validacoes principais:
 - idade minima de 18 anos
 - campos obrigatórios preenchidos
 - e-mail único, com resposta amigável: `Esse e-mail já está na lista.`
+
+### Admin
+
+Telas:
+
+- `/admin/register`: cria usuario admin com `admin = false`.
+- `/admin/login`: autentica usuario ja aprovado.
+- `/admin`: mostra contatos do site e inscricoes beta.
+
+Fluxo inicial:
+
+1. Crie o usuario em `/admin/register`.
+2. No banco, altere `AdminUser.admin` para `1` no e-mail desejado.
+3. Entre por `/admin/login`.
+
+### `POST /api/contact`
+
+Salva a mensagem no MySQL e tenta enviar uma notificacao para `CONTACT_NOTIFICATION_EMAIL`.
+Se SMTP nao estiver configurado, a mensagem continua sendo salva no banco e a API registra um aviso no log.
 
 ## Tracking
 

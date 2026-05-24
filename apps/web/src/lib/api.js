@@ -15,6 +15,10 @@ function getFriendlyMessage(status, data) {
     AGE_INVALID: 'Por segurança, o Mimi será uma comunidade 18+ no beta inicial.',
     INVALID_EMAIL: 'Informe um e-mail válido.',
     VALIDATION_ERROR: 'Revise os campos obrigatórios e tente novamente.',
+    WEAK_PASSWORD: 'Use uma senha com pelo menos 8 caracteres.',
+    INVALID_CREDENTIALS: 'E-mail ou senha inválidos.',
+    ADMIN_NOT_APPROVED: 'Seu usuário ainda não tem permissão de admin.',
+    ADMIN_AUTH_REQUIRED: 'Faça login como admin para acessar esta área.',
     DB_UNAVAILABLE: 'A API está no ar, mas não conseguiu acessar o banco de dados agora.',
     DB_NOT_MIGRATED: 'O banco ainda não está migrado. Rode as migrations do Prisma e tente novamente.',
     CORS_FORBIDDEN: 'A API bloqueou esta origem. Confira FRONTEND_URL no backend.',
@@ -48,16 +52,18 @@ function getFriendlyMessage(status, data) {
   return 'Não foi possível entrar na lista agora.';
 }
 
-export async function submitWaitlistLead(payload) {
+async function apiRequest(path, options = {}) {
   let response;
 
   try {
-    response = await fetch(`${API_URL}/api/waitlist`, {
-      method: 'POST',
+    response = await fetch(`${API_URL}${path}`, {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        ...(options.token ? { Authorization: `Bearer ${options.token}` } : {}),
+        ...options.headers
       },
-      body: JSON.stringify(payload)
+      ...options,
+      body: options.body && typeof options.body !== 'string' ? JSON.stringify(options.body) : options.body
     });
   } catch (error) {
     throw new ApiError(
@@ -83,4 +89,53 @@ export async function submitWaitlistLead(payload) {
   }
 
   return data;
+}
+
+export async function submitWaitlistLead(payload) {
+  return apiRequest('/api/waitlist', {
+    method: 'POST',
+    body: payload
+  });
+}
+
+export async function submitContactMessage(payload) {
+  return apiRequest('/api/contact', {
+    method: 'POST',
+    body: payload
+  });
+}
+
+export async function registerAdmin(payload) {
+  return apiRequest('/api/admin/register', {
+    method: 'POST',
+    body: payload
+  });
+}
+
+export async function loginAdmin(payload) {
+  return apiRequest('/api/admin/login', {
+    method: 'POST',
+    body: payload
+  });
+}
+
+export async function fetchAdminDashboard(token) {
+  return apiRequest('/api/admin/dashboard', {
+    method: 'GET',
+    token
+  });
+}
+
+export async function fetchAdminMe(token) {
+  return apiRequest('/api/admin/me', {
+    method: 'GET',
+    token
+  });
+}
+
+export async function logoutAdmin(token) {
+  return apiRequest('/api/admin/logout', {
+    method: 'POST',
+    token
+  });
 }

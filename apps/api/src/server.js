@@ -2,6 +2,8 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import { randomUUID } from 'node:crypto';
+import adminRouter from './routes/admin.js';
+import contactRouter from './routes/contact.js';
 import waitlistRouter from './routes/waitlist.js';
 
 const app = express();
@@ -43,6 +45,8 @@ app.get('/api/health', (_request, response) => {
 });
 
 app.use('/api/waitlist', waitlistRouter);
+app.use('/api/contact', contactRouter);
+app.use('/api/admin', adminRouter);
 
 app.use((request, response) => {
   response.status(404).json({
