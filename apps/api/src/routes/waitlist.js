@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { Prisma } from '@prisma/client';
 import { prisma } from '../prisma.js';
+import { sendWaitlistConfirmation } from '../mail.js';
 
 const router = Router();
 
@@ -114,9 +115,25 @@ router.post('/', async (request, response, next) => {
       },
       select: {
         id: true,
+        name: true,
+        email: true,
         createdAt: true
       }
     });
+
+    const mailResult = await Promise.allSettled([sendWaitlistConfirmation(lead)]);
+    mailResult
+      .filter((result) => result.status === 'rejected')
+      .forEach((result) => {
+        console.error(
+          JSON.stringify({
+            level: 'error',
+            code: 'WAITLIST_EMAIL_FAILED',
+            leadId: lead.id,
+            message: result.reason?.message || 'Falha ao enviar e-mail da lista beta.'
+          })
+        );
+      });
 
     response.status(201).json({
       message: 'Você entrou na lista do Mimi.',

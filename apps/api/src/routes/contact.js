@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { Prisma } from '@prisma/client';
 import { prisma } from '../prisma.js';
-import { sendContactNotification } from '../mail.js';
+import { sendContactConfirmation, sendContactNotification } from '../mail.js';
 
 const router = Router();
 
@@ -71,18 +71,19 @@ router.post('/', async (request, response, next) => {
       }
     });
 
-    try {
-      await sendContactNotification(contact);
-    } catch (mailError) {
-      console.error(
-        JSON.stringify({
-          level: 'error',
-          code: 'CONTACT_EMAIL_FAILED',
-          contactId: contact.id,
-          message: mailError.message
-        })
-      );
-    }
+    const mailResults = await Promise.allSettled([sendContactNotification(contact), sendContactConfirmation(contact)]);
+    mailResults
+      .filter((result) => result.status === 'rejected')
+      .forEach((result) => {
+        console.error(
+          JSON.stringify({
+            level: 'error',
+            code: 'CONTACT_EMAIL_FAILED',
+            contactId: contact.id,
+            message: result.reason?.message || 'Falha ao enviar e-mail de contato.'
+          })
+        );
+      });
 
     response.status(201).json({
       message: 'Mensagem recebida pelo Mimi.',

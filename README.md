@@ -37,7 +37,9 @@ Variaveis principais:
 - `VITE_POSTHOG_KEY`: chave opcional do PostHog. Se ficar vazia, o site funciona normalmente sem analytics.
 - `VITE_POSTHOG_HOST`: host do PostHog, padrao `https://app.posthog.com`.
 - `CONTACT_NOTIFICATION_EMAIL`: e-mail que recebe mensagens da pagina de contato, padrao `linnubr@gmail.com`.
-- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`: configuracao SMTP para envio dos contatos por e-mail.
+- `GMAIL_USER`: conta Gmail usada para enviar contatos, padrao `sayuuzin@gmail.com`.
+- `GMAIL_APP_PASSWORD`: senha de app do Gmail usada para envio.
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_USER`, `SMTP_PASS`, `SMTP_FROM`: configuracao SMTP opcional, usada apenas se `GMAIL_APP_PASSWORD` nao estiver configurada.
 
 ## Banco e Prisma
 
@@ -136,7 +138,18 @@ Fluxo inicial:
 ### `POST /api/contact`
 
 Salva a mensagem no MySQL e tenta enviar uma notificacao para `CONTACT_NOTIFICATION_EMAIL`.
-Se SMTP nao estiver configurado, a mensagem continua sendo salva no banco e a API registra um aviso no log.
+Por padrao, o envio usa Gmail com `GMAIL_USER` e `GMAIL_APP_PASSWORD`.
+Se Gmail/SMTP nao estiver configurado, a mensagem continua sendo salva no banco e a API registra um aviso no log.
+
+Tambem envia uma confirmacao amigavel para o e-mail da pessoa que entrou em contato.
+
+### E-mails automaticos
+
+Quando configurado, o Gmail envia:
+
+- notificacao interna de novo contato para `CONTACT_NOTIFICATION_EMAIL`;
+- confirmacao para quem enviou contato;
+- confirmacao para quem entrou na fila do beta.
 
 ## Tracking
 
