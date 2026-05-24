@@ -12,10 +12,10 @@
     "dev:api": "npm --workspace apps/api run dev",
     "build": "npm --workspace apps/web run build",
     "prisma:generate": "npm --workspace apps/api run prisma:generate",
-    "prisma:migrate": "npm --workspace apps/api run prisma:migrate"
+    "prisma:migrate": "npm --workspace apps/api run prisma:migrate",
+    "heroku-postbuild": "npm --workspace apps/api run prisma:generate"
   },
   "devDependencies": {
     "concurrently": "^9.1.2"
-  },
-  "heroku-postbuild": "npm --workspace apps/api run prisma:generate"
+  }
 }
