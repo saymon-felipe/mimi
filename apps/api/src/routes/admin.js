@@ -1,92 +1,18 @@
 import { Router } from 'express';
-import { randomBytes, scryptSync, timingSafeEqual, createHash } from 'node:crypto';
 import { Prisma } from '@prisma/client';
+import { requireAdmin } from '../middleware/requireAdmin.js';
 import { prisma } from '../prisma.js';
+import {
+  createSessionToken,
+  getSessionExpiry,
+  hashPassword,
+  hashToken,
+  sanitizeAdminUser,
+  verifyPassword
+} from '../services/adminAuth.js';
+import { emailRegex, normalizeEmail, normalizeString } from '../utils/input.js';
 
 const router = Router();
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const sessionDurationMs = 1000 * 60 * 60 * 24 * 7;
-
-function normalizeString(value) {
-  return typeof value === 'string' ? value.trim() : '';
-}
-
-function normalizeEmail(value) {
-  return normalizeString(value).toLowerCase();
-}
-
-function hashPassword(password, salt = randomBytes(16).toString('hex')) {
-  const hash = scryptSync(password, salt, 64).toString('hex');
-  return `scrypt:${salt}:${hash}`;
-}
-
-function verifyPassword(password, storedHash) {
-  const [algorithm, salt, hash] = String(storedHash || '').split(':');
-
-  if (algorithm !== 'scrypt' || !salt || !hash) {
-    return false;
-  }
-
-  const candidate = Buffer.from(hashPassword(password, salt).split(':')[2], 'hex');
-  const expected = Buffer.from(hash, 'hex');
-
-  return candidate.length === expected.length && timingSafeEqual(candidate, expected);
-}
-
-function hashToken(token) {
-  return createHash('sha256').update(token).digest('hex');
-}
-
-function sanitizeUser(user) {
-  return {
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    admin: user.admin,
-    createdAt: user.createdAt
-  };
-}
-
-function authError(message = 'Faça login como admin para acessar esta área.') {
-  const error = new Error(message);
-  error.statusCode = 401;
-  error.code = 'ADMIN_AUTH_REQUIRED';
-  error.publicMessage = message;
-  return error;
-}
-
-async function requireAdmin(request, _response, next) {
-  try {
-    const authHeader = request.get('authorization') || '';
-    const token = authHeader.startsWith('Bearer ') ? authHeader.slice(7).trim() : '';
-
-    if (!token) {
-      next(authError());
-      return;
-    }
-
-    const session = await prisma.adminSession.findUnique({
-      where: { tokenHash: hashToken(token) },
-      include: { user: true }
-    });
-
-    if (!session || session.expiresAt <= new Date()) {
-      next(authError('Sessão expirada. Faça login novamente.'));
-      return;
-    }
-
-    if (!session.user.admin) {
-      next(authError('Seu usuário ainda não tem permissão de admin.'));
-      return;
-    }
-
-    request.adminUser = session.user;
-    request.adminTokenHash = session.tokenHash;
-    next();
-  } catch (error) {
-    next(error);
-  }
-}
 
 router.post('/register', async (request, response, next) => {
   try {
@@ -129,7 +55,7 @@ router.post('/register', async (request, response, next) => {
 
     response.status(201).json({
       message: 'Usuário criado. Ative admin = 1 no banco para liberar acesso.',
-      user: sanitizeUser(user)
+      user: sanitizeAdminUser(user)
     });
   } catch (error) {
     if (error instanceof Prisma.PrismaClientKnownRequestError && error.code === 'P2002') {
@@ -175,8 +101,8 @@ router.post('/login', async (request, response, next) => {
       return;
     }
 
-    const token = randomBytes(32).toString('hex');
-    const expiresAt = new Date(Date.now() + sessionDurationMs);
+    const token = createSessionToken();
+    const expiresAt = getSessionExpiry();
 
     await prisma.adminSession.create({
       data: {
@@ -190,7 +116,7 @@ router.post('/login', async (request, response, next) => {
       message: 'Login realizado.',
       token,
       expiresAt,
-      user: sanitizeUser(user)
+      user: sanitizeAdminUser(user)
     });
   } catch (error) {
     next(error);
@@ -207,7 +133,7 @@ router.post('/logout', requireAdmin, async (request, response, next) => {
 });
 
 router.get('/me', requireAdmin, (request, response) => {
-  response.json({ user: sanitizeUser(request.adminUser) });
+  response.json({ user: sanitizeAdminUser(request.adminUser) });
 });
 
 router.get('/dashboard', requireAdmin, async (_request, response, next) => {

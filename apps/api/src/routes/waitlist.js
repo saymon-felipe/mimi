@@ -2,6 +2,8 @@ import { Router } from 'express';
 import { Prisma } from '@prisma/client';
 import { prisma } from '../prisma.js';
 import { sendWaitlistConfirmation } from '../mail.js';
+import { emailRegex, normalizeEmail, normalizeList, normalizeString } from '../utils/input.js';
+import { validationError } from '../utils/responses.js';
 
 const router = Router();
 
@@ -16,24 +18,6 @@ const requiredFields = [
   'betaInterest'
 ];
 
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-function normalizeString(value) {
-  return typeof value === 'string' ? value.trim() : '';
-}
-
-function normalizeList(value) {
-  if (Array.isArray(value)) {
-    return value.map(normalizeString).filter(Boolean);
-  }
-
-  if (typeof value === 'string' && value.trim()) {
-    return [value.trim()];
-  }
-
-  return [];
-}
-
 function validateLead(body) {
   const missingField = requiredFields.find((field) => {
     const value = body[field];
@@ -41,42 +25,27 @@ function validateLead(body) {
   });
 
   if (missingField) {
-    return {
-      code: 'VALIDATION_ERROR',
-      message: 'Preencha todos os campos obrigatórios.'
-    };
+    return validationError('Preencha todos os campos obrigatórios.');
   }
 
-  const email = normalizeString(body.email).toLowerCase();
+  const email = normalizeEmail(body.email);
 
   if (!emailRegex.test(email)) {
-    return {
-      code: 'INVALID_EMAIL',
-      message: 'Informe um e-mail válido.'
-    };
+    return validationError('Informe um e-mail válido.', 'INVALID_EMAIL');
   }
 
   const age = Number(body.age);
 
   if (!Number.isInteger(age)) {
-    return {
-      code: 'AGE_INVALID',
-      message: 'Informe uma idade válida.'
-    };
+    return validationError('Informe uma idade válida.', 'AGE_INVALID');
   }
 
   if (age < 18) {
-    return {
-      code: 'AGE_INVALID',
-      message: 'Por segurança, o Mimi será uma comunidade 18+ no beta inicial.'
-    };
+    return validationError('Por segurança, o Mimi será uma comunidade 18+ no beta inicial.', 'AGE_INVALID');
   }
 
   if (normalizeList(body.lookingFor).length === 0 || normalizeList(body.wantsToMeet).length === 0) {
-    return {
-      code: 'VALIDATION_ERROR',
-      message: 'Escolha pelo menos uma opção nos campos de interesse.'
-    };
+    return validationError('Escolha pelo menos uma opção nos campos de interesse.');
   }
 
   return null;
@@ -84,10 +53,10 @@ function validateLead(body) {
 
 router.post('/', async (request, response, next) => {
   try {
-    const validationError = validateLead(request.body || {});
+    const validation = validateLead(request.body || {});
 
-    if (validationError) {
-      response.status(400).json(validationError);
+    if (validation) {
+      response.status(400).json(validation);
       return;
     }
 
@@ -95,7 +64,7 @@ router.post('/', async (request, response, next) => {
     const lead = await prisma.waitlistLead.create({
       data: {
         name: normalizeString(body.name),
-        email: normalizeString(body.email).toLowerCase(),
+        email: normalizeEmail(body.email),
         age: Number(body.age),
         cityState: normalizeString(body.cityState),
         identity: normalizeString(body.identity),

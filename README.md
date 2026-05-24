@@ -20,13 +20,13 @@ npm install
 Crie os arquivos de ambiente a partir dos exemplos:
 
 ```bash
-cp .env.example .env
+cp apps/web/.env.example apps/web/.env
 cp apps/api/.env.example apps/api/.env
 ```
 
 No Windows PowerShell, voce tambem pode criar os arquivos manualmente copiando o conteudo dos exemplos.
 
-O frontend le variaveis `VITE_*` do `.env` da raiz. A API le `apps/api/.env`.
+O frontend le variaveis `VITE_*` de `apps/web/.env`. A API le `apps/api/.env`.
 
 Variaveis principais:
 

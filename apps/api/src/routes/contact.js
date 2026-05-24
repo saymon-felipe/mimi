@@ -2,40 +2,23 @@ import { Router } from 'express';
 import { Prisma } from '@prisma/client';
 import { prisma } from '../prisma.js';
 import { sendContactConfirmation, sendContactNotification } from '../mail.js';
+import { emailRegex, normalizeEmail, normalizeString } from '../utils/input.js';
+import { validationError } from '../utils/responses.js';
 
 const router = Router();
 
-const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-
-function normalizeString(value) {
-  return typeof value === 'string' ? value.trim() : '';
-}
-
 function validateContact(body) {
   const name = normalizeString(body.name);
-  const email = normalizeString(body.email).toLowerCase();
+  const email = normalizeEmail(body.email);
   const subject = normalizeString(body.subject);
   const message = normalizeString(body.message);
 
   if (!name || !email || !subject || !message) {
-    return {
-      code: 'VALIDATION_ERROR',
-      message: 'Preencha todos os campos obrigatórios.'
-    };
+    return validationError('Preencha todos os campos obrigatórios.');
   }
 
   if (!emailRegex.test(email)) {
-    return {
-      code: 'INVALID_EMAIL',
-      message: 'Informe um e-mail válido.'
-    };
-  }
-
-  if (message.length < 12) {
-    return {
-      code: 'VALIDATION_ERROR',
-      message: 'Conte um pouco mais para a gente entender seu contato.'
-    };
+    return validationError('Informe um e-mail válido.', 'INVALID_EMAIL');
   }
 
   return null;
@@ -43,10 +26,10 @@ function validateContact(body) {
 
 router.post('/', async (request, response, next) => {
   try {
-    const validationError = validateContact(request.body || {});
+    const validation = validateContact(request.body || {});
 
-    if (validationError) {
-      response.status(400).json(validationError);
+    if (validation) {
+      response.status(400).json(validation);
       return;
     }
 
@@ -54,7 +37,7 @@ router.post('/', async (request, response, next) => {
     const contact = await prisma.contactMessage.create({
       data: {
         name: normalizeString(body.name),
-        email: normalizeString(body.email).toLowerCase(),
+        email: normalizeEmail(body.email),
         subject: normalizeString(body.subject),
         message: normalizeString(body.message),
         source: normalizeString(body.source) || 'contact_page',
