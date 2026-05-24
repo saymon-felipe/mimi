@@ -1,6 +1,6 @@
 # Mimi
 
-Landing page de validacao do Mimi, uma rede social desktop-first para descoberta social por posts, comunidades, afinidade e convites de conversa.
+Landing page de validacao do Mimi, uma rede social desktop-first para femboys, pessoas alternativas, androginas e de expressao feminina se conectarem por posts, comunidades, afinidade e convites de conversa.
 
 ## Stack
 

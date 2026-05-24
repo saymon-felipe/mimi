@@ -127,7 +127,7 @@ const legalPages = {
       },
       {
         title: 'Conduta',
-        text: 'Assédio, fetichização invasiva, discurso de ódio, exposição de dados pessoais e qualquer tentativa de burlar ferramentas de segurança não são aceitos.'
+        text: 'Assédio, abordagens invasivas, discurso de ódio, exposição de dados pessoais e qualquer tentativa de burlar ferramentas de segurança não são aceitos.'
       },
       {
         title: 'Conteúdo',
@@ -143,7 +143,7 @@ const legalPages = {
     sections: [
       {
         title: 'Dados coletados',
-        text: 'Podemos coletar nome ou apelido, e-mail, idade, cidade/estado, identidade declarada, interesses, contato social opcional e respostas abertas.'
+        text: 'Podemos coletar nome ou apelido, e-mail, idade, cidade/estado, perfil declarado, interesses, contato social opcional e respostas abertas.'
       },
       {
         title: 'Como usamos',
@@ -161,7 +161,7 @@ const legalPages = {
   }
 };
 
-const heroSignals = ['Feed em vez de swipe', 'DM só por convite', 'Comunidades desde o beta', '18+'];
+const heroSignals = ['Feed em vez de swipe', 'DM só por convite', 'Comunidades desde o beta', 'Expressão com contexto'];
 
 const conceptFlow = ['Post', 'Afinidade', 'Comentário', 'Convite', 'Conversa'];
 
@@ -192,7 +192,7 @@ const howItWorks = [
   {
     title: 'Descubra',
     text: 'O feed Pra Você prioriza posts e comunidades compatíveis com sua vibe.',
-    lines: ['Pra Você', '82% afinidade', 'Femboys BR']
+    lines: ['Pra Você', '82% afinidade', 'Expressão feminina']
   },
   {
     title: 'Conecte',
@@ -207,16 +207,24 @@ const communities = [
     description: 'Posts, dúvidas, looks e desabafos.'
   },
   {
-    name: 'Meninas que gostam de femboys',
-    description: 'Um espaço para conexões com respeito.'
+    name: 'Conexões com respeito',
+    description: 'Conversas, convites e aproximações com contexto.'
   },
   {
-    name: 'Pessoas soft',
-    description: 'Estética, conversas leves e pertencimento.'
+    name: 'Pessoas alternativas',
+    description: 'Estética, expressão e pertencimento.'
   },
   {
-    name: 'Femboys héteros',
-    description: 'Vivências, dúvidas e conexões sem presunções.'
+    name: 'Vivências sem rótulos',
+    description: 'Dúvidas, histórias e conversas sem presunções.'
+  },
+  {
+    name: 'Androginia e estilo',
+    description: 'Referências, presença e experimentação visual.'
+  },
+  {
+    name: 'Expressão feminina',
+    description: 'Looks, cuidado e troca entre pessoas femininas.'
   },
   {
     name: 'Looks e estética',
@@ -239,44 +247,43 @@ const communities = [
     description: 'Um canto para falar sem performar.'
   },
   {
-    name: 'Relacionamentos',
-    description: 'Afeto, limites e cuidado.'
+    name: 'Laços e convivência',
+    description: 'Afeto, limites e cuidado no convívio.'
   }
 ];
 
 const identityOptions = [
   'Femboy',
+  'Pessoa alternativa',
+  'Pessoa andrógina',
+  'Expressão feminina',
   'Garoto feminino',
   'Soft boy',
-  'Andrógino(a)',
   'Tomboy',
-  'Garota',
-  'Garoto',
-  'Pessoa queer',
-  'Pessoa não-binária',
-  'Pessoa alternativa',
-  'Admirador(a) respeitoso(a)',
+  'Criador(a) de conteúdo',
+  'Só quero explorar',
   'Prefiro escrever'
 ];
 
 const lookingForOptions = [
   'Amizades',
-  'Romance',
   'Comunidades',
   'Conversas leves',
+  'Looks e estética',
+  'Expressão com liberdade',
   'Pessoas parecidas comigo',
-  'Pessoas que gostem da minha vibe',
+  'Conteúdos de pessoas alternativas',
   'Ainda não sei'
 ];
 
 const wantsToMeetOptions = [
-  'Femboys',
-  'Meninas',
-  'Garotos femininos',
+  'Femboys e pessoas femininas',
+  'Pessoas alternativas',
   'Pessoas andróginas',
-  'Pessoas soft/alternativas',
-  'Todo mundo',
-  'Só amizade por enquanto'
+  'Pessoas com interesses parecidos',
+  'Comunidades por tema',
+  'Conversas leves',
+  'Só explorar por enquanto'
 ];
 
 const betaOptions = ['Sim', 'Talvez', 'Não agora'];
@@ -299,10 +306,6 @@ const safetyCards = [
     text: 'Cada canto do Mimi precisa de cultura e moderação.'
   },
   {
-    title: '18+',
-    text: 'O beta inicial será uma comunidade adulta.'
-  },
-  {
     title: 'Moderação desde o beta',
     text: 'Segurança é parte do produto desde o primeiro teste.'
   }
@@ -311,16 +314,16 @@ const safetyCards = [
 const feedPosts = [
   {
     author: 'Lia',
-    community: 'Pessoas soft',
-    text: 'Queria um lugar onde eu pudesse postar meus looks e conversar sem virar fetiche.',
+    community: 'Pessoas alternativas',
+    text: 'Queria um lugar onde eu pudesse postar meus looks sem virar só aparência.',
     mimos: 128,
     comments: 24,
     tone: 'pink'
   },
   {
     author: 'sayu',
-    community: 'Femboys BR',
-    text: 'Ser femboy hétero é estranho porque todo mundo assume que você é gay. Alguém mais passa por isso?',
+    community: 'Vivências sem rótulos',
+    text: 'Como vocês lidam quando as pessoas presumem coisas antes de conhecer vocês?',
     mimos: 93,
     comments: 31,
     tone: 'blue'
@@ -346,9 +349,9 @@ const demoSeedPosts = [
   {
     id: 'lia-soft',
     author: 'Lia',
-    community: 'Pessoas soft',
+    community: 'Pessoas alternativas',
     time: 'agora',
-    text: 'Queria um lugar onde eu pudesse postar meus looks e conversar sem virar fetiche.',
+    text: 'Queria um lugar onde eu pudesse postar meus looks sem virar só aparência.',
     tags: ['looks', 'limites claros', 'conversa leve'],
     mimos: 128,
     tone: 'pink',
@@ -361,11 +364,11 @@ const demoSeedPosts = [
     ]
   },
   {
-    id: 'kael-femboys',
+    id: 'sayu-vivencias',
     author: 'sayu',
-    community: 'Femboys BR',
+    community: 'Vivências sem rótulos',
     time: '12 min',
-    text: 'Ser femboy hétero é estranho porque todo mundo assume que você é gay. Alguém mais passa por isso?',
+    text: 'Como vocês lidam quando as pessoas presumem coisas antes de conhecer vocês?',
     tags: ['vivência', 'pergunta sincera'],
     mimos: 93,
     tone: 'blue',
@@ -400,11 +403,11 @@ const richerDemoSeedPosts = [
     author: 'sayu',
     community: 'Femboys BR',
     time: 'agora',
-    text: 'Hoje eu me senti tão fofinho e confortável com essas roupinhas... ficar abraçadinho com a minha Isla deixou tudo ainda mais quentinho por dentro.',
+    text: 'Hoje eu me senti confortável nesse look. A referência da Isla deixou a foto com um clima leve e bem meu.',
     tags: ['look', 'fofo', 'Plastic Memories'],
     mimos: 214,
     tone: 'pink',
-    media: [{ src: sayuPhotoOne, alt: 'sayu com look fofo abraçando a Isla' }],
+    media: [{ src: sayuPhotoOne, alt: 'sayu com look fofo inspirado na Isla' }],
     liked: false,
     followed: true,
     comments: [
@@ -415,9 +418,9 @@ const richerDemoSeedPosts = [
   {
     id: 'lia-soft',
     author: 'Lia',
-    community: 'Pessoas soft',
+    community: 'Pessoas alternativas',
     time: '18 min',
-    text: 'Queria um lugar onde eu pudesse postar meus looks e conversar sem virar fetiche.',
+    text: 'Queria um lugar onde eu pudesse postar meus looks sem virar só aparência.',
     tags: ['looks', 'limites claros', 'conversa leve'],
     mimos: 128,
     tone: 'pink',
@@ -430,11 +433,11 @@ const richerDemoSeedPosts = [
     ]
   },
   {
-    id: 'sayu-femboys',
+    id: 'sayu-vivencias',
     author: 'sayu',
-    community: 'Femboys BR',
+    community: 'Vivências sem rótulos',
     time: '24 min',
-    text: 'Ser femboy hétero é estranho porque todo mundo assume que você é gay. Alguém mais passa por isso?',
+    text: 'Como vocês lidam quando as pessoas presumem coisas antes de conhecer vocês?',
     tags: ['vivência', 'pergunta sincera'],
     mimos: 93,
     tone: 'blue',
@@ -484,7 +487,7 @@ const simulatedPosts = [
   },
   {
     author: 'Nami',
-    community: 'Pessoas soft',
+    community: 'Pessoas alternativas',
     text: 'A melhor parte de um feed por afinidade é descobrir gente sem precisar se vender em bio.',
     tags: ['afinidade', 'feed'],
     tone: 'blue'
@@ -531,7 +534,7 @@ const connectionInvites = reactive([
     avatar: sayuProfile,
     community: 'Femboys BR',
     arrived: 'chegou há 12 min',
-    text: 'Vocês têm interesses parecidos em games, looks e Femboys BR.',
+    text: 'Vocês têm interesses parecidos em games, looks e conversas leves.',
     status: 'pendente'
   }
 ]);
@@ -831,7 +834,7 @@ function publishDemoPost() {
   const post = {
     id: `you-${Date.now()}`,
     author: 'Você',
-    community: demoView.value === 'community' ? activeCommunity.value : 'Pessoas soft',
+    community: demoView.value === 'community' ? activeCommunity.value : 'Pessoas alternativas',
     time: 'agora',
     text: text || 'Compartilhei uma imagem no Mimi.',
     tags: ['novo post', 'beta'],
@@ -1446,8 +1449,8 @@ onBeforeUnmount(() => {
           <p class="eyebrow">Rede social de afinidade e comunidade</p>
           <h1>Menos swipe. Mais presença.</h1>
           <p class="hero-subtitle">
-            Mimi é uma rede social para pessoas soft, femboys, andróginas e admiradores respeitosos se conectarem por
-            posts, comunidades e afinidade.
+            Mimi é uma rede social para femboys, pessoas alternativas, andróginas e de expressão feminina se conectarem
+            por posts, comunidades e afinidade.
           </p>
           <p class="hero-support">Conheça pessoas pelo que elas compartilham, não por um card de perfil.</p>
 
@@ -1468,8 +1471,8 @@ onBeforeUnmount(() => {
         <div class="hero-stage hero-lite-stage" aria-label="Prévia social do Mimi">
           <div class="hero-feed-card hero-float-card">
             <span class="live-dot"></span>
-            <strong>Lia publicou em Pessoas soft</strong>
-            <p>Queria um lugar onde eu pudesse postar meus looks e conversar sem virar fetiche.</p>
+            <strong>Lia publicou em Pessoas alternativas</strong>
+            <p>Queria um lugar onde eu pudesse postar meus looks sem virar só aparência.</p>
             <div class="hero-mini-actions">
               <span>Dar mimo</span>
               <span>Comentar</span>
@@ -1512,7 +1515,7 @@ onBeforeUnmount(() => {
                 <button class="side-pill" type="button">Convites</button>
                 <div class="sidebar-thread">
                   <span># Femboys BR</span>
-                  <span># Pessoas soft</span>
+                  <span># Pessoas alternativas</span>
                   <span># Looks e estética</span>
                 </div>
                 <div class="sidebar-card">
@@ -1545,11 +1548,11 @@ onBeforeUnmount(() => {
                     <span class="avatar avatar-pink">L</span>
                     <div>
                       <strong>Lia</strong>
-                      <span>em Pessoas soft · agora</span>
+                      <span>em Pessoas alternativas · agora</span>
                     </div>
                     <button type="button">Seguir</button>
                   </div>
-                  <p>Queria um lugar onde eu pudesse postar meus looks e conversar sem virar fetiche.</p>
+                  <p>Queria um lugar onde eu pudesse postar meus looks sem virar só aparência.</p>
                   <div class="tag-row">
                     <span>looks</span>
                     <span>limites claros</span>
@@ -1627,8 +1630,9 @@ onBeforeUnmount(() => {
           <p class="eyebrow">O problema</p>
           <h2>Apps comuns transformam pessoas em cards.</h2>
           <p>
-            Para muita gente soft, femboy ou andrógina, apps de namoro viram julgamento rápido, fetichização e conversa
-            invasiva. O Mimi começa por contexto: posts, comunidades e interesses antes de qualquer DM.
+            Para femboys, pessoas alternativas, andróginas e de expressão feminina, redes comuns muitas vezes viram
+            julgamento rápido, redução à aparência e abordagem invasiva. O Mimi começa por contexto: posts,
+            comunidades e interesses antes de qualquer DM.
           </p>
         </div>
 
@@ -1832,7 +1836,7 @@ onBeforeUnmount(() => {
               <section v-if="false" class="invite-screen">
                 <div class="invite-orb"><img :src="sayuProfile" alt="Foto de Sayu" /></div>
                 <h3>Sayu quer conversar com você</h3>
-                <p>Vocês têm interesses parecidos em games, looks e Femboys BR.</p>
+                <p>Vocês têm interesses parecidos em games, looks e conversas leves.</p>
                 <div class="invite-actions">
                   <button type="button" @click="acceptInvite">{{ acceptedInvite ? 'Aceito' : 'Aceitar' }}</button>
                   <button type="button" @click="setDemoView('feed')">Agora não</button>
@@ -2173,16 +2177,16 @@ onBeforeUnmount(() => {
               <span class="avatar avatar-large avatar-pink">L</span>
               <div>
                 <strong>Lia</strong>
-                <p>Andrógina · soft · games · looks pastel · conversas calmas.</p>
+                <p>Andrógina · alternativa · games · looks pastel · conversas calmas.</p>
               </div>
               <div class="tag-row">
                 <span>conversas leves primeiro</span>
                 <span>limites claros</span>
-                <span>romance leve</span>
+                <span>aproximação com calma</span>
               </div>
               <div class="profile-meta">
                 <span>Comunidades</span>
-                <strong>Looks e estética · Pessoas soft · Games</strong>
+                <strong>Looks e estética · Pessoas alternativas · Games</strong>
               </div>
               <div class="recent-posts">
                 <small>Posts recentes</small>
@@ -2234,8 +2238,8 @@ onBeforeUnmount(() => {
         <div class="safety-copy">
           <p class="eyebrow">Segurança</p>
           <h2>Conexão sim. Assédio não.</h2>
-          <p>O Mimi foi pensado para permitir expressão sem abrir espaço para invasão, fetichização ou pressão.</p>
-          <div class="culture-note">Admirar é permitido. Fetichizar e assediar não.</div>
+          <p>O Mimi foi pensado para permitir expressão sem abrir espaço para invasão, redução à aparência ou pressão.</p>
+          <div class="culture-note">Expressão com contexto. Aproximação só com respeito.</div>
         </div>
 
         <div class="safety-grid">
@@ -2304,7 +2308,7 @@ onBeforeUnmount(() => {
 
           <div v-show="currentStep === 2" class="form-step">
             <label>
-              <span>Como você se identifica? *</span>
+              <span>Como você quer aparecer no Mimi? *</span>
               <select v-model="form.identity" name="identity">
                 <option value="">Selecione uma opção</option>
                 <option v-for="option in identityOptions" :key="option" :value="option">{{ option }}</option>
@@ -2327,7 +2331,7 @@ onBeforeUnmount(() => {
             </fieldset>
 
             <fieldset>
-              <legend>Quem você gostaria de conhecer? *</legend>
+              <legend>Que tipo de conexão você quer encontrar? *</legend>
               <div class="option-grid">
                 <label v-for="option in wantsToMeetOptions" :key="option" class="check-pill">
                   <input v-model="form.wantsToMeet" type="checkbox" :value="option" />
@@ -2507,9 +2511,9 @@ onBeforeUnmount(() => {
                   </div>
                   <dl>
                     <div><dt>Cidade</dt><dd>{{ lead.cityState }}</dd></div>
-                    <div><dt>Identidade</dt><dd>{{ lead.identity }}</dd></div>
-                    <div><dt>Busca</dt><dd>{{ formatListValue(lead.lookingFor) }}</dd></div>
-                    <div><dt>Conhecer</dt><dd>{{ formatListValue(lead.wantsToMeet) }}</dd></div>
+                    <div><dt>Perfil</dt><dd>{{ lead.identity }}</dd></div>
+                    <div><dt>Interesses</dt><dd>{{ formatListValue(lead.lookingFor) }}</dd></div>
+                    <div><dt>Conexões</dt><dd>{{ formatListValue(lead.wantsToMeet) }}</dd></div>
                     <div><dt>Beta</dt><dd>{{ lead.betaInterest }}</dd></div>
                   </dl>
                   <p v-if="lead.biggestPain">{{ lead.biggestPain }}</p>
